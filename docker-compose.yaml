@@ -14,9 +14,6 @@ services:
       WORKER_HOST: ${WORKER_HOST}
       WORKER_PORT: ${WORKER_PORT}
       SECRET_KEY: ${SECRET_KEY}
-    networks:
-      - web-app-network
-    restart: unless-stopped
 
   nginx:
     image: nginx:latest
@@ -31,9 +28,3 @@ services:
     depends_on:
       - app
     restart: unless-stopped
-    networks:
-      - web-app-network
-
-networks:
-  web-app-network:
-    driver: bridge
