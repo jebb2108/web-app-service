@@ -53,6 +53,7 @@ async def toggle_match_handler(request: UserIdRequest):
             url = config.gateway.url + f'/api/users?user_id={request.user_id}&target_field=all'
             resp = await client.get(url=url)
             data = resp.json()
+            logger.info('user data info: %s', data)
             if data and resp.status_code == 200:
                 user_data= {
                     'user_id': request.user_id,
