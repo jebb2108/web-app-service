@@ -1,9 +1,11 @@
+version: '3.8'
+
 services:
   app:
     build: .
     container_name: web-app
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"  # Добавьте проброс порта для отладки
     environment:
       THIS_HOST: ${THIS_HOST}
       THIS_PORT: ${THIS_PORT}
@@ -16,6 +18,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     networks:
       - web-app-network
+    restart: unless-stopped  # Добавьте авторестарт
 
   nginx:
     image: nginx:latest
