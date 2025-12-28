@@ -87,6 +87,11 @@ async def toggle_match_handler(request: UserIdRequest):
                         status_code=resp.status_code,
                         detail=resp.text
                     )
+            else:
+                raise HTTPException(
+                    status_code=404,
+                    detail='Failed to load user data!'
+                )
 
     except Exception as e:
         logger.error(f"Error notifying session end: {e}")
