@@ -3,7 +3,7 @@ services:
     build: .
     container_name: web-app
     ports:
-      - "${THIS_PORT}:{THIS_PORT}"
+      - "${THIS_PORT}:${THIS_PORT}"
     environment:
       THIS_HOST: ${THIS_HOST}
       THIS_PORT: ${THIS_PORT}
