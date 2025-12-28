@@ -77,6 +77,7 @@ async def toggle_match_handler(request: UserIdRequest):
                     headers={"Content-Type": "application/json"},
                     timeout=30.0
                 )
+                logger.info('response data: %s', resp.json())
 
                 if resp.status_code == 200:
                     return resp.json()
