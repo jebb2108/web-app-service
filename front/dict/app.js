@@ -11,8 +11,11 @@ let recognition = null;
 let currentWords = [];
 let currentCardIndex = 0;
 
-// API base — используем origin текущей страницы (чтобы не было CORS проблем при том же хосте)
+// API base — используем origin текущей страницы
 const API_BASE_URL = 'https://dict.lllang.site';
+
+console.log('API Base URL:', API_BASE_URL);
+console.log('Current location:', window.location.protocol + '//' + window.location.host);
 
 // --- Helpers ---
 function showNotification(message, type='success') {
@@ -678,7 +681,10 @@ async function deleteWord(wordId) {
     if (!confirm('Вы уверены, что хотите удалить это слово?')) return;
     if (!currentUserId) { showNotification('Ошибка: Не указан user_id', 'error'); return; }
 
-    const url = `${API_BASE_URL}/api/words/?user_id=${currentUserId}&word_id=${wordId}`;
+    const url = `${API_BASE_URL}/api/words?user_id=${currentUserId}&word_id=${wordId}`;
+
+    console.log('Delete URL:', url);
+
     try {
         if (loadingOverlay) loadingOverlay.style.display = 'flex';
         const response = await fetch(url, { method: 'DELETE', headers: { 'Accept': 'application/json' }, credentials: isSameOrigin(API_BASE_URL) ? 'include' : 'omit' });
