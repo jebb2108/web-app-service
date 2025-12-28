@@ -206,7 +206,13 @@ function playAudio(audioUrl) {
     const icon = audioBtn.querySelector('i');
     
     try {
-        const audio = new Audio(audioUrl);
+        // Исправляем протокол, если URL начинается с http://
+        let fixedAudioUrl = audioUrl;
+        if (audioUrl.startsWith('http://')) {
+            fixedAudioUrl = audioUrl.replace('http://', 'https://');
+        }
+
+        const audio = new Audio(fixedAudioUrl);
         audioBtn.disabled = true;
         icon.className = 'fas fa-volume-up';
         
