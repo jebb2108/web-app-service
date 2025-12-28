@@ -21,7 +21,7 @@ class GatewayConfig:
     url: str = None
 
     def __post_init__(self):
-        if not self.url: self.url=f'https://{self.host}:{self.port}'
+        if not self.url: self.url=f'http://{self.host}:{self.port}'
 
 @dataclass
 class Config:
