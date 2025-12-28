@@ -12,7 +12,7 @@ let currentWords = [];
 let currentCardIndex = 0;
 
 // API base — используем origin текущей страницы (чтобы не было CORS проблем при том же хосте)
-const API_BASE_URL = 'https://dict.lllang.site';
+const API_BASE_URL = 'http://dict.lllang.site';
 
 // --- Helpers ---
 function showNotification(message, type='success') {
