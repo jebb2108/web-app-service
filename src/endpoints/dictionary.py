@@ -71,7 +71,7 @@ async def api_search_word_handler(
                 url=config.gateway.url + f'/api/words/search?user_id={user_id}&word={word}'
             )
             all_words_resp = await client.get(
-                url=config.gateway.url + f'/api/words/search?user_id=0&word={word}'
+                url=config.gateway.url + f'/api/words/search?word={word}'
             )
 
             if not user_word_resp.status_code == 200:
