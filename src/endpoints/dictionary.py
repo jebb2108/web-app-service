@@ -82,14 +82,16 @@ async def api_search_word_handler(
                 raise HTTPException(
                     status_code=all_words_resp.status_code, detail=all_words_resp.text
                 )
+
             # Если два запроса прошли успешно,
             # то конвертируем resp объекты в словарики
             user_word = user_word_resp.json()
             all_user_words = all_words_resp.json()
+
             # От лица пользователя не должно быть слова от
             # самого пользователя в словаре других пользователей, соответсвенно удаляем
-            if user_id in all_user_words:
-                del all_user_words[str(user_word)]
+            if str(user_id) in all_user_words:
+                del all_user_words[str(user_id)][user_word]
 
             return {"user_word": user_word, "all_users_words": all_user_words}
 
