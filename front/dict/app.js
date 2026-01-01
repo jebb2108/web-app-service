@@ -365,6 +365,11 @@ async function addWord() {
 
         const text = await response.text().catch(()=>null);
         // Проверка статуса 403
+        if (response.status == 401) {
+            let msg = `Слово уже существует`;
+            showNotification(`Слово "${escapeHTML(word)}" уже добавлено!`, 'error');
+        }
+
         if (response.status === 403) {
             let msg = `Активируйте подписку`;
             try {
