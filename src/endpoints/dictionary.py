@@ -85,7 +85,7 @@ async def api_search_word_handler(
 
             # Если два запроса прошли успешно,
             # то конвертируем resp объекты в словарики
-            user_word = user_word_resp.json()[0]
+            user_word = user_word_resp.json()
             all_user_words = all_words_resp.json()
 
             logger.info(f'user word: {user_word}')
@@ -96,7 +96,7 @@ async def api_search_word_handler(
             if str(user_id) in all_user_words:
                 del all_user_words[str(user_id)]
 
-            return {"user_word": user_word, "all_users_words": all_user_words}
+            return {"user_word": user_word[0], "all_users_words": all_user_words}
 
 
     except Exception as e:
