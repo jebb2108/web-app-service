@@ -85,8 +85,7 @@ async def api_search_word_handler(
 
             # Если два запроса прошли успешно,
             # то конвертируем resp объекты в словарики
-            user_word = user_word_resp.json()
-            user_word = user_word.get(str(user_id))[0]
+            if user_word := (user_word_resp.json()).get(str(user_id)): user_word = user_word[0]
             all_user_words = all_words_resp.json()
 
             logger.debug(f'user word: {user_word}')
