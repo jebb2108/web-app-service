@@ -1,7 +1,6 @@
-from datetime import date
 from typing import Union, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 class Word(BaseModel):

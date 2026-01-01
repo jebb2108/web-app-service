@@ -89,8 +89,8 @@ async def api_search_word_handler(
             user_word = user_word.get(str(user_id))[0]
             all_user_words = all_words_resp.json()
 
-            logger.info(f'user word: {user_word}')
-            logger.info(f'all words: {all_user_words}')
+            logger.debug(f'user word: {user_word}')
+            logger.debug(f'all words: {all_user_words}')
 
             # От лица пользователя не должно быть слова от
             # самого пользователя в словаре других пользователей, соответсвенно удаляем
