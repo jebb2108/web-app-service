@@ -88,7 +88,7 @@ async def api_search_word_handler(
             all_user_words = all_words_resp.json()
             # От лица пользователя не должно быть слова от
             # самого пользователя в словаре других пользователей, соответсвенно удаляем
-            if str(user_id) in all_user_words:
+            if user_id in all_user_words:
                 del all_user_words[str(user_word)]
 
             return {"user_word": user_word, "all_users_words": all_user_words}
