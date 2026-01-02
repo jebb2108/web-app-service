@@ -382,6 +382,7 @@ async function addWord() {
         if (response.status == 409) {
             let msg = `Слово уже существует`;
             showNotification(`Слово "${escapeHTML(word)}" уже добавлено!`, 'error');
+            return;
         }
         
         // Проверка всех остальных ошибок
