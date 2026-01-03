@@ -122,7 +122,7 @@ async def handle_send_message(websocket: WebSocket, message_data: dict):
         sender=username,
         text=message_data.get("text", ""),
         created_at=datetime.now(
-            tz=config.TZINFO
+            tz=config.tzinfo
         ).isoformat(timespec="milliseconds"),
         room_id=room_id,
     )
