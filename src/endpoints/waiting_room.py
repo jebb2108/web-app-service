@@ -11,11 +11,30 @@ from src.validators.tokens import create_token
 router = APIRouter(prefix="/api/user")
 
 
+@router.get("/check_profile")
+async def check_profile_exists(
+        user_id: str = Query(..., description="User ID")
+):
+    """ Проверяет, существует ли профиль пользователя в БД """
+    try:
+        async with httpx.AsyncClient() as client:
+            url = config.gateway.url + f'/api/check_profile?user_id={user_id}'
+            resp = await client.get(url=url)
+            if resp.status_code == 200:
+                return {"exists": resp.json()}
+            else:
+                raise HTTPException(status_code=resp.status_code, detail=resp.text)
+
+    except Exception as e:
+        logger.error(f'Error in check_user_handler: {e}')
+        raise HTTPException(status_code=500, detail='Internal Server Error')
+
+
 @router.get("/check_user")
 async def check_user_handler(
         user_id: str = Query(..., description="User ID")
 ):
-    """Проверяет, существует ли пользователь в БД"""
+    """ Проверяет, существует ли пользователь в БД """
     try:
         async with httpx.AsyncClient() as client:
             url = config.gateway.url + f'/api/users?user_id={user_id}'

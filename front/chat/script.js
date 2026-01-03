@@ -93,7 +93,7 @@ async function getUserIdFromUrl() {
 // Проверка существования пользователя в БД
 async function checkUserExists(userId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/check_user?user_id=${encodeURIComponent(userId)}`, {
+        const response = await fetch(`${API_BASE_URL}/check_profile?user_id=${encodeURIComponent(userId)}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
