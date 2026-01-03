@@ -19,7 +19,7 @@ async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(mi
             "expires_at": time_obj.isoformat(),
         }
 
-        token = jwt.encode(payload=payload, key=config.secret_key, algorithm="HS256")
+        token = jwt.encode(payload=payload, key='test', algorithm="HS256")
         return token
 
     except Exception:
@@ -28,7 +28,7 @@ async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(mi
 
 def convert_token(token: str):
     """Декодирует токен по секретному ключу"""
-    return jwt.decode(jwt=token, key=config.secret_key, algorithms=["HS256"])
+    return jwt.decode(jwt=token, key='test', algorithms=["HS256"])
 
 
 async def validate_access(token: str, room_id: str) -> bool:
