@@ -28,7 +28,7 @@ async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(mi
 
 def convert_token(token: str):
     """Декодирует токен по секретному ключу"""
-    return jwt.decode(jwt=token, key=config.SECRET_KEY, algorithms=["HS256"])
+    return jwt.decode(jwt=token, key=config.secret_key, algorithms=["HS256"])
 
 
 async def validate_access(token: str, room_id: str) -> bool:
