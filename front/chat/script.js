@@ -409,6 +409,7 @@ function formatBirthDateInput(input) {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Элементы страниц
+    const loadingPage = document.getElementById('loadingPage');
     const welcomePage = document.getElementById('welcomePage');
     const registrationPage = document.getElementById('registrationPage');
     const roomPage = document.getElementById('roomPage');
@@ -439,25 +440,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик клика по картинке комнаты
     roomElements.roomImage.addEventListener('click', toggleQueue);
 
-    // Инициализация приложения - сразу показываем форму регистрации если пользователь не найден
+    // Инициализация приложения - показываем загрузочную страницу и проверяем пользователя
     async function initializeApp() {
+        showPage(loadingPage);
+
         const userId = await getUserId();
 
         if (userId) {
             const userExists = await checkUserExists(userId);
 
             if (userExists) {
-                showPage(roomPage);
-                initRoom();
+                // Показываем комнату ожидания после небольшой задержки для лучшего UX
+                setTimeout(() => {
+                    showPage(roomPage);
+                    initRoom();
+                }, 500);
             } else {
-                // Сразу показываем форму регистрации
-                showPage(registrationPage);
+                // Показываем форму регистрации после небольшой задержки
+                setTimeout(() => {
+                    showPage(registrationPage);
+                    validateNickname();
+                }, 500);
             }
         } else {
-            showPage(welcomePage);
+            // Если user_id не определен, показываем welcomePage
+            setTimeout(() => {
+                showPage(welcomePage);
+            }, 500);
         }
     }
-
 
     // Показать подсказку для никнейма
     nicknameHelp.addEventListener('click', function() {
@@ -632,7 +643,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         locationStatus.textContent = 'Определение местоположения...';
         locationStatus.className = 'field-validation';
-        
+
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 const locationData = {
@@ -665,18 +676,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Отправка формы регистрации
     registrationForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
         const userId = await getUserId();
         if (!userId) {
             alert('Не удалось определить ID пользователя. Пожалуйста, откройте приложение через Telegram.');
             return;
         }
-        
+
         if (!validateNickname()) {
             alert('Пожалуйста, укажите корректный никнейм (только латинские буквы, 6-15 символов)');
             return;
         }
-        
+
         if (!validateBirthDate()) {
             alert('Пожалуйста, укажите корректную дату рождения в формате ДД-ММ-ГГГГ');
             return;
@@ -701,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gender: genderInput.value,
             intro: document.getElementById('about').value,
             dating: romanticInterest.checked,
-            location: shareLocationBtn.dataset.location ? 
+            location: shareLocationBtn.dataset.location ?
                 JSON.parse(shareLocationBtn.dataset.location) : null
         };
 
@@ -736,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         page.classList.add('active');
     }
-    
-    validateNickname();
+
+    // Запускаем инициализацию приложения
     initializeApp();
 });

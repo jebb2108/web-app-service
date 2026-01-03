@@ -7,113 +7,119 @@
     <link rel="stylesheet" href="styles.css?v=03012026-1">
 </head>
 <body>
-    <div class="chat-container">
-        <!-- Страница приветствия -->
-        <div id="welcomePage" class="page active">
-            <div class="chat-header">
-                Добро пожаловать!
-            </div>
-            <div class="messages-container">
-                <div class="system-message">
-                    Для доступа к платформе требуется регистрация
-                </div>
-            </div>
-            <div class="input-container">
-                <button id="startRegistration" class="submit-button">Продолжить регистрацию</button>
+    <!-- Загрузочная страница -->
+    <div id="loadingPage" class="page active loading-screen">
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Загружаем данные...</div>
+        </div>
+    </div>
+
+    <!-- Страница приветствия -->
+    <div id="welcomePage" class="page">
+        <div class="chat-header">
+            Добро пожаловать!
+        </div>
+        <div class="messages-container">
+            <div class="system-message">
+                Для доступа к платформе требуется регистрация
             </div>
         </div>
-
-        <!-- Страница регистрации -->
-        <div id="registrationPage" class="page">
-            <div class="chat-header">
-                Создание профиля
-            </div>
-            <form id="registrationForm" class="form-container">
-               <div class="input-group">
-                    <label for="nickname">Никнейм:</label>
-                    <input type="text" id="nickname" name="nickname" 
-                        autocapitalize="none" 
-                        autocorrect="off" 
-                        autocomplete="off" 
-                        required>
-                    <div class="nickname-checkmark checkmark"></div>
-                    <div class="nickname-help help-icon">?</div>
-                </div>
-                <div class="input-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                    <div class="email-checkmark checkmark"></div>
-                </div>
-                
-                <div class="input-group">
-                    <label for="birth_date">Дата рождения:</label>
-                    <input type="text" id="birth_date" name="birth_date" placeholder="ДД-ММ-ГГГГ" required>
-                    <div class="birthdate-checkmark checkmark"></div>
-                    <div id="ageValidation" class="field-validation"></div>
-                </div>
-                
-                <div class="input-group">
-                    <label>Пол:</label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="gender" value="male" required>
-                            <span class="radio-custom"></span>
-                            Мужской
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="gender" value="female">
-                            <span class="radio-custom"></span>
-                            Женский
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="gender" value="other">
-                            <span class="radio-custom"></span>
-                            Другой
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label for="about">О себе:</label>
-                    <textarea id="about" name="about" rows="4"></textarea>
-                </div>
-                
-                <!-- Новая галочка для романтических отношений -->
-                <div id="romanticSection" class="checkbox-group hidden">
-                    <input type="checkbox" id="romanticInterest" name="romantic_interest">
-                    <label for="romanticInterest">Заинтересован в романтических отношениях</label>
-                </div>
-                
-                <!-- Секция с геолокацией и согласием -->
-                <div id="datingSection" class="hidden">
-                    <div class="input-group">
-                        <button type="button" id="shareLocation" class="location-button">Share Location</button>
-                        <div id="locationStatus" class="field-validation"></div>
-                    </div>
-                </div>
-                
-                <!-- Текст согласия -->
-                <div id="agreementText" class="agreement-text hidden">
-                    Нажимая кнопку «Создать профиль», вы подтверждаете, 
-                    что вам исполнилось 18 лет и вы согласны с
-                    <a href="#" class="agreement-link">Правилами использования сервиса</a> для знакомств. 
-                </div>
-                
-                <button type="submit" class="submit-button">Создать профиль</button>
-            </form>
+        <div class="input-container">
+            <button id="startRegistration" class="submit-button">Продолжить регистрацию</button>
         </div>
+    </div>
 
-        <!-- Комната ожидания -->
-        <div id="roomPage" class="page">
-            <div class="chat-header">
-                Поиск собеседника
+    <!-- Страница регистрации -->
+    <div id="registrationPage" class="page">
+        <div class="chat-header">
+            Создание профиля
+        </div>
+        <form id="registrationForm" class="form-container">
+           <div class="input-group">
+                <label for="nickname">Никнейм:</label>
+                <input type="text" id="nickname" name="nickname"
+                    autocapitalize="none"
+                    autocorrect="off"
+                    autocomplete="off"
+                    required>
+                <div class="nickname-checkmark checkmark"></div>
+                <div class="nickname-help help-icon">?</div>
             </div>
-            <div class="room-container">
-                <img id="room-image" src="" class="room-image" alt="Queue Status">
-                <div id="user-status" class="user-status"></div>
-                <div id="search-message" class="search-message"></div>
-                <div id="room-error" class="room-error"></div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <div class="email-checkmark checkmark"></div>
             </div>
+
+            <div class="input-group">
+                <label for="birth_date">Дата рождения:</label>
+                <input type="text" id="birth_date" name="birth_date" placeholder="ДД-ММ-ГГГГ" required>
+                <div class="birthdate-checkmark checkmark"></div>
+                <div id="ageValidation" class="field-validation"></div>
+            </div>
+
+            <div class="input-group">
+                <label>Пол:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="male" required>
+                        <span class="radio-custom"></span>
+                        Мужской
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="female">
+                        <span class="radio-custom"></span>
+                        Женский
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="other">
+                        <span class="radio-custom"></span>
+                        Другой
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="about">О себе:</label>
+                <textarea id="about" name="about" rows="4"></textarea>
+            </div>
+
+            <!-- Новая галочка для романтических отношений -->
+            <div id="romanticSection" class="checkbox-group hidden">
+                <input type="checkbox" id="romanticInterest" name="romantic_interest">
+                <label for="romanticInterest">Заинтересован в романтических отношениях</label>
+            </div>
+
+            <!-- Секция с геолокацией и согласием -->
+            <div id="datingSection" class="hidden">
+                <div class="input-group">
+                    <button type="button" id="shareLocation" class="location-button">Share Location</button>
+                    <div id="locationStatus" class="field-validation"></div>
+                </div>
+            </div>
+
+            <!-- Текст согласия -->
+            <div id="agreementText" class="agreement-text hidden">
+                Нажимая кнопку «Создать профиль», вы подтверждаете,
+                что вам исполнилось 18 лет и вы согласны с
+                <a href="#" class="agreement-link">Правилами использования сервиса</a> для знакомств.
+            </div>
+
+            <button type="submit" class="submit-button">Создать профиль</button>
+        </form>
+    </div>
+
+    <!-- Комната ожидания -->
+    <div id="roomPage" class="page">
+        <div class="chat-header">
+            Поиск собеседника
+        </div>
+        <div class="room-container">
+            <img id="room-image" src="" class="room-image" alt="Queue Status">
+            <div id="user-status" class="user-status"></div>
+            <div id="search-message" class="search-message"></div>
+            <div id="room-error" class="room-error"></div>
         </div>
     </div>
 
