@@ -105,7 +105,10 @@ async def cancel_match_handler(
 ):
     try:
         async with httpx.AsyncClient() as client:
-            url = config.gateway.url + f'/api/cancel_match?user_id={user_id}&is_aborted={is_aborted}'
+
+            url = config.worker.url + config.worker.prefix + \
+                  f'/cancel_match?user_id={user_id}&is_aborted={is_aborted}'
+
             resp = await client.get(url=url)
             if resp.status_code == 200:
                 return resp.json()
