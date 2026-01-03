@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик клика по картинке комнаты
     roomElements.roomImage.addEventListener('click', toggleQueue);
 
-    // Инициализация приложения - показываем загрузочную страницу и проверяем пользователя
+    // Инициализация приложения
     async function initializeApp() {
         showPage(loadingPage);
 
@@ -450,7 +450,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const userExists = await checkUserExists(userId);
 
             if (userExists) {
-                // Показываем комнату ожидания после небольшой задержки для лучшего UX
+                // Показываем комнату ожидания
+                // после небольшой задержки для лучшего UX
                 setTimeout(() => {
                     showPage(roomPage);
                     initRoom();
@@ -743,8 +744,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Обновленная функция showPage с анимацией
     function showPage(page) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // Сначала скрываем все страницы
+        document.querySelectorAll('.page').forEach(p => {
+            p.classList.remove('active');
+            // Для загрузочной страницы добавляем класс скрытия
+            if (p.id === 'loadingPage') {
+                p.style.display = 'none';
+            }
+        });
+
+        // Затем показываем нужную страницу
+        if (page.id === 'loadingPage') {
+            page.style.display = 'flex';
+        }
         page.classList.add('active');
     }
 
