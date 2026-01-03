@@ -75,13 +75,18 @@ async def create_token_handler(
     """ Обработчик создания токена """
     try:
         async with httpx.AsyncClient() as client:
-            url = config.gateway.url + f'/api/users?user_id={user_id}'
+
+            url = config.gateway.url + \
+                  f'/api/users?user_id={user_id}&target_field=nickname'
+
             resp = await client.get(url=url)
-            if resp.status_code == 200 and resp.json() is True:
-                url = config.gateway.url + f'/api/users?user_id={user_id}&target_field=nickname'
-                resp = await client.get(url=url)
-                nickname = resp.json().get('nickname')
-                # Создаю токен для аутентификации сессии
+            if resp.status_code == 200:
+
+                # Извлекает данные с gateway сервера
+                data = resp.json()
+                nickname = data.get('nickname')
+
+                # Создает токен для аутентификации сессии
                 token = await create_token(user_id, nickname, room_id)
                 return {"token": token}
             else:
