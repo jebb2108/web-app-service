@@ -33,7 +33,7 @@ class Config:
     this_host: str = os.getenv('THIS_HOST')
     this_port: int = int(os.getenv('THIS_PORT'))
 
-    tzinfo: datetime = timezone(timedelta(hours=3.0))
+    tzinfo: timezone = timezone(timedelta(hours=3.0))
     secret_key: str = os.getenv('SECRET_KEY')
 
     gateway: "GatewayConfig" = None

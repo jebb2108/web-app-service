@@ -6,7 +6,7 @@ from src.config import config
 from src.exc import FailToCreateToken
 
 
-async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(minutes=15)):
+async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(minutes=15)) -> str:
     """Функция для выдачи уникального токена пользоватеою, содержащую его данные"""
     try:
 
