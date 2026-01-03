@@ -98,7 +98,24 @@ async def toggle_match_handler(request: UserIdRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-###### HTTP endpoints для взаимодействия с чатом ######
+@router.get("/cancel_match")
+async def cancel_match_handler(
+        user_id: int = Query(..., description="User Id"),
+        is_aborted: bool = Query(..., description="Did the user leave?")
+):
+    try:
+        async with httpx.AsyncClient() as client:
+            url = config.gateway.url + f'/api/cancel_match?user_id={user_id}&is_aborted={is_aborted}'
+            resp = await client.get(url=url)
+            if resp.status_code == 200:
+                return resp.json()
+            else:
+                raise HTTPException(status_code=resp.status_code, detail=resp.text)
+
+    except Exception as e:
+        logger.error(f'Error leaving chat: {e}')
+
+
 @router.get("/chat/rooms/{room_id}/status")
 async def get_room_status(room_id: str):
     """Получение статуса комнаты"""

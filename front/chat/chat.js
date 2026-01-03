@@ -283,7 +283,7 @@ function handlePartnerExited(reason) {
 // Функция для уведомления сервера чата о завершении сессии
 async function notifyChatServer(reason) {
     try {
-        const response = await fetch(`${CHAT_API_URL}/notify_session_end`, {
+        const response = await fetch(`${WORKER_API_URL}/notify_session_end`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
