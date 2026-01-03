@@ -86,6 +86,9 @@ async def create_token_handler(
                 data = resp.json()
                 nickname = data.get('nickname')
 
+                if not nickname or not room_id:
+                    raise HTTPException(status_code=400, detail=f"Missing parameters: {nickname}, {room_id}")
+
                 # Создает токен для аутентификации сессии
                 token = await create_token(user_id, nickname, room_id)
                 return {"token": token}
