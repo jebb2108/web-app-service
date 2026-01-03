@@ -142,7 +142,7 @@ async def get_message_history(room_id: str) -> Optional[Dict[str, str]]:
     try:
         async with httpx.AsyncClient() as client:
             url = config.worker.url + config.worker.prefix + \
-                  f'/api/messages?room_id={room_id}'
+                  f'/messages?room_id={room_id}'
             resp = await client.get(url=url)
             if resp.status_code == 200:
                 return resp.json()
