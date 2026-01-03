@@ -1,6 +1,6 @@
 [project]
 name = "web-app-service"
-version = "0.2.6"
+version = "0.2.7"
 description = "Frontend & Backend Server"
 authors = [
     {name = "Gabriel Bouchard",email = "gabouchard2002@gmail.com"}

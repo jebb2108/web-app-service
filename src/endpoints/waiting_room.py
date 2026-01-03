@@ -75,7 +75,7 @@ async def create_token_handler(
     """ Обработчик создания токена """
     try:
         async with httpx.AsyncClient() as client:
-            url = config.gateway.url + f'/api/user_exists?user_id={user_id}'
+            url = config.gateway.url + f'/api/users?user_id={user_id}'
             resp = await client.get(url=url)
             if resp.status_code == 200 and resp.json() is True:
                 resp = await client.get(url=config.gateway.url+f'users?user_id={user_id}&target_field=nickname')
