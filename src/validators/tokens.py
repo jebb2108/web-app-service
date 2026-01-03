@@ -10,7 +10,7 @@ async def create_token(user_id, nickname, room_id, exp: timedelta = timedelta(mi
     """Функция для выдачи уникального токена пользоватеою, содержащую его данные"""
     try:
 
-        time_obj = datetime.now(tz=config.TZINFO) + exp
+        time_obj = datetime.now(tz=config.tzinfo) + exp
 
         payload = {
             "user_id": user_id,
