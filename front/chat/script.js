@@ -102,6 +102,7 @@ async function checkUserExists(userId) {
 
         if (response.ok) {
             const result = await response.json();
+            console.log(`Profile exists: ${result.exists}`);
             return result.exists;
         }
         return false;
