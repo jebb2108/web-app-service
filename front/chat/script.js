@@ -169,10 +169,8 @@ function stopSearchMessages() {
 async function initRoom() {
     if (roomInitialized) return;
 
-    updateRoomImage(0);
-    updateUserStatus();
-
-    // Загружаем начальный статус пользователя
+    // Обновляем статус пользователя и картинку комнаты
+    await updateRoomImageOnInit();
     await checkUserStatus();
 
     // Запускаем периодическую проверку статуса пользователя
@@ -182,6 +180,27 @@ async function initRoom() {
     setInterval(updateQueueData, 2000);
 
     roomInitialized = true;
+}
+
+// Функция для обновления картинки при инициализации
+async function updateRoomImageOnInit() {
+    try {
+        // Получаем текущий размер очереди
+        const response = await fetch(`${API_WORKER_URL}/queue/status`);
+        if (response.ok) {
+            const data = await response.json();
+            currentQueueSize = data.queue_size;
+            updateRoomImage(currentQueueSize);
+        } else {
+            console.warn('Не удалось получить статус очереди при инициализации');
+            updateRoomImage(0); // Устанавливаем картинку по умолчанию
+        }
+    } catch (error) {
+        console.error('Error updating room image on init:', error);
+        updateRoomImage(0); // Устанавливаем картинку по умолчанию
+    }
+
+    updateUserStatus();
 }
 
 // Запуск периодической проверки статуса пользователя
@@ -216,7 +235,7 @@ async function checkUserStatus() {
 
             if (!wasInQueue && userInQueue) {
                 startSearchMessages();
-            } else if (wasInQueue && !userInQueue) {
+            } else if (wasInQueue && !userInQueue && !matchFound) {
                 stopSearchMessages();
             }
         }
@@ -227,7 +246,7 @@ async function checkUserStatus() {
             if (matchData.match_id) {
                 matchFound = true;
                 userInQueue = false;
-                showMatchFound(matchData.matchId, matchData.room_id, userId);
+                showMatchFound(matchData.match_id, matchData.room_id, userId);
             }
         }
 
@@ -314,9 +333,6 @@ async function checkMatchFound() {
                 matchFound = true;
                 userInQueue = false;
                 showMatchFound(data.match_id, data.room_id, userId);
-
-                // Остановить все проверки
-                // stopStatusChecking();
             }
         }
     } catch (error) {
@@ -440,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик клика по картинке комнаты
     roomElements.roomImage.addEventListener('click', toggleQueue);
 
-    // Инициализация приложения
+    // Инициализация приложения - показываем загрузочную страницу и проверяем пользователя
     async function initializeApp() {
         showPage(loadingPage);
 
@@ -450,24 +466,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const userExists = await checkUserExists(userId);
 
             if (userExists) {
-                // Показываем комнату ожидания
-                // после небольшой задержки для лучшего UX
+                // Показываем комнату ожидания и сразу инициализируем с правильной картинкой
+                await initRoom();
                 setTimeout(() => {
                     showPage(roomPage);
-                    initRoom();
-                }, 500);
+                }, 300);
             } else {
                 // Показываем форму регистрации после небольшой задержки
                 setTimeout(() => {
                     showPage(registrationPage);
                     validateNickname();
-                }, 500);
+                }, 300);
             }
         } else {
             // Если user_id не определен, показываем welcomePage
             setTimeout(() => {
                 showPage(welcomePage);
-            }, 500);
+            }, 300);
         }
     }
 
@@ -744,22 +759,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Обновленная функция showPage с анимацией
     function showPage(page) {
         // Сначала скрываем все страницы
         document.querySelectorAll('.page').forEach(p => {
             p.classList.remove('active');
-            // Для загрузочной страницы добавляем класс скрытия
-            if (p.id === 'loadingPage') {
-                p.style.display = 'none';
-            }
+            p.style.display = 'none';
         });
 
         // Затем показываем нужную страницу
-        if (page.id === 'loadingPage') {
-            page.style.display = 'flex';
-        }
         page.classList.add('active');
+        page.style.display = 'flex';
+
+        // Анимация появления для не-загрузочных страниц
+        if (page.id !== 'loadingPage') {
+            page.style.animation = 'fadeIn 0.5s ease-out';
+        }
     }
 
     // Запускаем инициализацию приложения
