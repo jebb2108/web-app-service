@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        const latinRegex = /^[a-zA-Z]+$/;
+        const latinRegex = /^[a-zA-Z0-9_-]+$/;
         if (!latinRegex.test(nickname)) {
             nicknameCheckmark.classList.remove('visible');
             nicknameHelp.classList.remove('hidden');
