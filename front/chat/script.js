@@ -131,26 +131,23 @@ const roomElements = {
     error: document.getElementById('room-error')
 };
 
-
-
-
 // Функция для смены сообщений поиска
 function startSearchMessages() {
     if (searchMessageInterval) {
         clearInterval(searchMessageInterval);
     }
-    
+
     // Перемешиваем сообщения каждый раз при входе в очередь
     currentShuffledMessages = [...searchMessages].sort(() => Math.random() - 0.5);
     currentMessageIndex = 0;
-    
+
     roomElements.searchMessage.textContent = currentShuffledMessages[currentMessageIndex];
     roomElements.searchMessage.style.opacity = '1';
-    
+
     searchMessageInterval = setInterval(() => {
         currentMessageIndex = (currentMessageIndex + 1) % currentShuffledMessages.length;
         roomElements.searchMessage.style.opacity = '0';
-        
+
         setTimeout(() => {
             roomElements.searchMessage.textContent = currentShuffledMessages[currentMessageIndex];
             roomElements.searchMessage.style.opacity = '1';
@@ -171,19 +168,19 @@ function stopSearchMessages() {
 
 async function initRoom() {
     if (roomInitialized) return;
-    
+
     updateRoomImage(0);
     updateUserStatus();
-    
+
     // Загружаем начальный статус пользователя
     await checkUserStatus();
-    
+
     // Запускаем периодическую проверку статуса пользователя
     startStatusChecking();
-    
+
     // Периодически обновляем статус очереди
     setInterval(updateQueueData, 2000);
-    
+
     roomInitialized = true;
 }
 
@@ -192,7 +189,7 @@ function startStatusChecking() {
     if (statusCheckInterval) {
         clearInterval(statusCheckInterval);
     }
-    
+
     statusCheckInterval = setInterval(async () => {
         await checkUserStatus();
     }, 1000);
@@ -203,27 +200,27 @@ async function checkUserStatus() {
     try {
         const userId = await getUserId();
         if (!userId) return;
-        
+
         // Параллельно проверяем статус в очереди И наличие матча
         const [queueResponse, matchResponse] = await Promise.all([
             fetch(`${API_WORKER_URL}/queue/${userId}/status`),
             fetch(`${API_WORKER_URL}/check_match?user_id=${encodeURIComponent(userId)}`)
         ]);
-        
+
         if (queueResponse.ok) {
             const queueData = await queueResponse.json();
             const wasInQueue = userInQueue;
             userInQueue = queueData.in_queue;
-            
+
             updateUserStatus();
-            
+
             if (!wasInQueue && userInQueue) {
                 startSearchMessages();
             } else if (wasInQueue && !userInQueue) {
                 stopSearchMessages();
             }
         }
-        
+
         // ВСЕГДА проверяем матч, независимо от статуса очереди
         if (matchResponse.ok && !matchFound) {
             const matchData = await matchResponse.json();
@@ -233,7 +230,7 @@ async function checkUserStatus() {
                 showMatchFound(matchData.matchId, matchData.room_id, userId);
             }
         }
-        
+
     } catch (error) {
         console.error('Error checking user status:', error);
     }
@@ -266,9 +263,9 @@ function updateUserStatus() {
 // Функция переключения состояния очереди
 async function toggleQueue() {
     if (isLoading || matchFound) return;
-    
+
     setIsLoading(true);
-    
+
     try {
         const userId = await getUserId();
         if (!userId) {
@@ -277,7 +274,7 @@ async function toggleQueue() {
         // Отправляем запрос в worker API
         const response = await fetch(`${API_WORKER_URL}/match/toggle`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
@@ -289,13 +286,13 @@ async function toggleQueue() {
         if(response.status === 403){
             throw new Error(`Authorization error: status ${response.status}`);
         }
-        
+
         if (response.ok) {
             await checkUserStatus()
         } else {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
     } catch (error) {
         showError('Ошибка: ' + error.message);
         console.error('Error toggling queue:', error);
@@ -309,7 +306,7 @@ async function checkMatchFound() {
     try {
         const userId = await getUserId();
         if (!userId || matchFound) return;
-        
+
         const response = await fetch(`${API_WORKER_URL}/check_match?user_id=${encodeURIComponent(userId)}`);
         if (response.ok) {
             const data = await response.json();
@@ -317,7 +314,7 @@ async function checkMatchFound() {
                 matchFound = true;
                 userInQueue = false;
                 showMatchFound(data.match_id, data.room_id, userId);
-                
+
                 // Остановить все проверки
                 // stopStatusChecking();
             }
@@ -327,19 +324,11 @@ async function checkMatchFound() {
     }
 }
 
-// function stopStatusChecking() {
-//     if (statusCheckInterval) {
-//         clearInterval(statusCheckInterval);
-//         statusCheckInterval = null;
-//     }
-//     stopSearchMessages();
-// }
-
 // Показать найденный матч
 async function showMatchFound(matchId, roomId, userId) {
     roomElements.roomImage.src = 'media/door.jpeg';
     roomElements.userStatus.textContent = 'Собеседник найден! Нажми чтобы начать общение';
-    
+
     // Заменяем обработчик на переход в чат
     roomElements.roomImage.onclick = async function() {
         try {
@@ -354,7 +343,7 @@ async function showMatchFound(matchId, roomId, userId) {
             console.error('Error creating token:', error);
         }
     };
-    
+
     stopSearchMessages();
     showError('');
 }
@@ -371,7 +360,7 @@ function setIsLoading(loading) {
 
 function updateRoomImage(count) {
     if (matchFound) return;
-    
+
     if (count === 0) {
         roomElements.roomImage.src = 'media/empty_room.jpeg';
     } else if (count < 5) {
@@ -387,7 +376,7 @@ function showError(message) {
 
 async function updateQueueData() {
     if (matchFound) return;
-    
+
     try {
         const response = await fetch(`${API_WORKER_URL}/queue/status`);
         if (response.ok) {
@@ -404,14 +393,27 @@ async function updateQueueData() {
     }
 }
 
+// Функция для автоматической расстановки дефисов в дате рождения
+function formatBirthDateInput(input) {
+    let value = input.value.replace(/\D/g, '');
+
+    // Добавляем дефисы после 2 и 4 символов
+    if (value.length > 4) {
+        value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
+    } else if (value.length > 2) {
+        value = value.substring(0, 2) + '-' + value.substring(2, 4);
+    }
+
+    input.value = value;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Элементы страниц
     const welcomePage = document.getElementById('welcomePage');
     const registrationPage = document.getElementById('registrationPage');
     const roomPage = document.getElementById('roomPage');
-    
+
     // Кнопки и формы
-    const startRegistrationBtn = document.getElementById('startRegistration');
     const registrationForm = document.getElementById('registrationForm');
     const birthDateInput = document.getElementById('birth_date');
     const ageValidation = document.getElementById('ageValidation');
@@ -421,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nicknameInput = document.getElementById('nickname');
     const nicknameCheckmark = document.querySelector('.nickname-checkmark');
     const nicknameHelp = document.querySelector('.nickname-help');
-    
+
     // Новые элементы
     const romanticSection = document.getElementById('romanticSection');
     const romanticInterest = document.getElementById('romanticInterest');
@@ -429,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const shareLocationBtn = document.getElementById('shareLocation');
     const locationStatus = document.getElementById('locationStatus');
     const agreementText = document.getElementById('agreementText');
-    
+
     // Элементы подсказки
     const nicknameTooltip = document.getElementById('nicknameTooltip');
     const closeTooltip = document.getElementById('closeTooltip');
@@ -437,27 +439,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик клика по картинке комнаты
     roomElements.roomImage.addEventListener('click', toggleQueue);
 
-    // Инициализация приложения
+    // Инициализация приложения - сразу показываем форму регистрации если пользователь не найден
     async function initializeApp() {
         const userId = await getUserId();
-        
+
         if (userId) {
             const userExists = await checkUserExists(userId);
-            
+
             if (userExists) {
                 showPage(roomPage);
                 initRoom();
             } else {
-                showPage(welcomePage);
+                // Сразу показываем форму регистрации
+                showPage(registrationPage);
             }
         } else {
             showPage(welcomePage);
-            startRegistrationBtn.disabled = true;
-            startRegistrationBtn.textContent = 'Откройте через Telegram';
         }
     }
 
-    
+
     // Показать подсказку для никнейма
     nicknameHelp.addEventListener('click', function() {
         nicknameTooltip.classList.remove('hidden');
@@ -482,33 +483,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateNickname() {
         const nickname = nicknameInput.value.trim();
-        
+
         if (nickname.length < 6 || nickname.length > 15) {
             nicknameCheckmark.classList.remove('visible');
             nicknameHelp.classList.remove('hidden');
             return false;
         }
-        
+
         const latinRegex = /^[a-zA-Z0-9_-]+$/;
         if (!latinRegex.test(nickname)) {
             nicknameCheckmark.classList.remove('visible');
             nicknameHelp.classList.remove('hidden');
             return false;
         }
-        
+
         nicknameCheckmark.classList.add('visible');
         nicknameHelp.classList.add('hidden');
         return true;
     }
 
-    // Валидация даты рождения
-    birthDateInput.addEventListener('input', function() {
+    // Автоматическая форматирование даты рождения с дефисами
+    birthDateInput.addEventListener('input', function(e) {
+        // Сохраняем позицию курсора
+        const cursorPosition = this.selectionStart;
+        const originalValue = this.value;
+
+        // Форматируем значение
+        formatBirthDateInput(this);
+
+        // Восстанавливаем позицию курсора с учетом добавленных дефисов
+        let newCursorPosition = cursorPosition;
+
+        // Если мы добавили дефис, сдвигаем курсор
+        if (this.value.length > originalValue.length) {
+            newCursorPosition = this.value.length;
+        }
+
+        // Устанавливаем курсор
+        this.setSelectionRange(newCursorPosition, newCursorPosition);
+
+        // Запускаем валидацию
         validateBirthDate();
+    });
+
+    // Также обрабатываем событие keydown для лучшего UX
+    birthDateInput.addEventListener('keydown', function(e) {
+        // Разрешаем только цифры и управляющие клавиши
+        if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)) {
+            e.preventDefault();
+            return false;
+        }
     });
 
     function validateBirthDate() {
         const birthDateValue = birthDateInput.value.trim();
-        
+
         const dateRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
         if (!dateRegex.test(birthDateValue)) {
             ageValidation.textContent = 'Формат даты: ДД-ММ-ГГГГ';
@@ -518,12 +547,12 @@ document.addEventListener('DOMContentLoaded', function() {
             agreementText.classList.add('hidden');
             return false;
         }
-        
+
         const parts = birthDateValue.split('-');
         const day = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10);
         const year = parseInt(parts[2], 10);
-        
+
         const birthDate = new Date(year, month - 1, day);
         if (birthDate.getDate() !== day || birthDate.getMonth() !== month - 1 || birthDate.getFullYear() !== year) {
             ageValidation.textContent = 'Неверная дата';
@@ -533,11 +562,11 @@ document.addEventListener('DOMContentLoaded', function() {
             agreementText.classList.add('hidden');
             return false;
         }
-        
+
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
@@ -545,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ageValidation.textContent = '';
         ageValidation.className = 'field-validation';
         birthDateCheckmark.classList.add('visible');
-        
+
         if (age >= 18) {
             romanticSection.classList.remove('hidden');
         } else {
@@ -554,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             agreementText.classList.add('hidden');
             romanticInterest.checked = false;
         }
-        
+
         return true;
     }
 
@@ -578,12 +607,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateEmail() {
         const email = emailInput.value;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
+
         if (!email) {
             emailCheckmark.classList.remove('visible');
             return false;
         }
-        
+
         if (!emailRegex.test(email)) {
             emailCheckmark.classList.remove('visible');
             return false;
@@ -592,11 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return true;
         }
     }
-
-    // Переход к регистрации
-    startRegistrationBtn.addEventListener('click', function() {
-        showPage(registrationPage);
-    });
 
     // Получение геолокации
     shareLocationBtn.addEventListener('click', function() {
