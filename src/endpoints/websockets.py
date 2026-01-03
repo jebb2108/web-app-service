@@ -141,7 +141,8 @@ async def get_message_history(room_id: str) -> Optional[Dict[str, str]]:
     """Получение истории сообщений"""
     try:
         async with httpx.AsyncClient() as client:
-            url = config.gateway.url + f'/messages?room_id={room_id}'
+            url = config.worker.url + config.worker.prefix + \
+                  f'/api/messages?room_id={room_id}'
             resp = await client.get(url=url)
             if resp.status_code == 200:
                 return resp.json()
@@ -157,7 +158,8 @@ async def save_message(message_data: "MessageContent"):
     """Сохранение сообщения в Redis"""
     try:
         async with httpx.AsyncClient() as client:
-            url = config.gateway.url + f'/messages'
+            url = config.worker.url + config.worker.prefix + \
+                  f'/messages?room_id={message_data.room_id}'
             resp = await client.post(url=url, content=message_data.model_dump_json())
             if resp.status_code == 200:
                 return 200
