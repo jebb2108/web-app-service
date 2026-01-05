@@ -88,10 +88,10 @@ body {
     color: #2e7d32;
 }
 
-.bookmark i { 
-    font-size: 1.3rem; 
-    width: 25px; 
-    text-align: center; 
+.bookmark i {
+    font-size: 1.3rem;
+    width: 25px;
+    text-align: center;
 }
 
 /* ===== СТРАНИЦЫ ===== */
@@ -118,25 +118,25 @@ body {
 }
 
 /* ===== ФОРМЫ И ВВОД ===== */
-.form-group { 
-    margin-bottom: 20px; 
+.form-group {
+    margin-bottom: 20px;
 }
 
-label { 
-    display: block; 
-    margin-bottom: 8px; 
-    color: #5a5a5a; 
-    font-weight: 600; 
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #5a5a5a;
+    font-weight: 600;
 }
 
-.input-row { 
-    display: flex; 
-    gap: 15px; 
-    margin-bottom: 15px; 
+.input-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
-.input-group { 
-    flex: 1; 
+.input-group {
+    flex: 1;
 }
 
 input, select, textarea {
@@ -172,13 +172,13 @@ input:focus, select:focus, textarea:focus {
     gap: 10px;
 }
 
-.btn:hover { 
-    background: #388e3c; 
-    transform: translateY(-2px); 
+.btn:hover {
+    background: #388e3c;
+    transform: translateY(-2px);
 }
 
-.btn-secondary { 
-    background: #5a6268; 
+.btn-secondary {
+    background: #5a6268;
 }
 
 .delete-btn {
@@ -204,11 +204,9 @@ input:focus, select:focus, textarea:focus {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin: 0 auto;
-    width: auto;
+    width: 100%;
     max-width: 200px;
     opacity: 0.8;
-    order: 2;
 }
 
 .delete-word-btn:hover {
@@ -222,10 +220,49 @@ input:focus, select:focus, textarea:focus {
     transform: translateY(0);
 }
 
+/* Стили для кнопки редактирования */
+.edit-word-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 200px;
+}
+
+.edit-word-btn:hover {
+    background: #1976D2;
+    transform: translateY(-1px);
+}
+
+.edit-word-btn:active {
+    transform: translateY(0);
+}
+
+/* Контейнер для кнопок управления словом */
+.word-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin: 20px auto 0;
+    width: 100%;
+    max-width: 200px;
+    order: 2;
+}
+
 /* ===== РЕЗУЛЬТАТЫ ПОИСКА ===== */
-#searchResult { 
-    margin-top: 25px; 
-    display: none; 
+#searchResult {
+    margin-top: 25px;
+    display: none;
 }
 
 /* Стили для заголовка поиска */
@@ -473,35 +510,35 @@ input:focus, select:focus, textarea:focus {
     background: #fff;
 }
 
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-th, td { 
-    border-bottom: 1px solid #f0ede3; 
-    padding: 15px; 
-    text-align: left; 
+th, td {
+    border-bottom: 1px solid #f0ede3;
+    padding: 15px;
+    text-align: left;
 }
 
-th { 
-    background: #e8f5e9; 
-    color: #2e7d32; 
-    position: sticky; 
-    top: 0; 
+th {
+    background: #e8f5e9;
+    color: #2e7d32;
+    position: sticky;
+    top: 0;
 }
 
-tr:nth-child(even) { 
-    background-color: #fcfcf8; 
+tr:nth-child(even) {
+    background-color: #fcfcf8;
 }
 
-tr:hover { 
-    background-color: #f5f7f0; 
+tr:hover {
+    background-color: #f5f7f0;
 }
 
-.actions { 
-    display: flex; 
-    gap: 10px; 
+.actions {
+    display: flex;
+    gap: 10px;
 }
 
 /* ===== УВЕДОМЛЕНИЯ И ЗАГРУЗКА ===== */
@@ -519,23 +556,23 @@ tr:hover {
     transition: transform 0.3s;
 }
 
-.notification.show { 
-    transform: translateX(0); 
+.notification.show {
+    transform: translateX(0);
 }
 
-.success { 
-    background: #2e7d32; 
+.success {
+    background: #2e7d32;
 }
 
-.error { 
-    background: #c62828; 
+.error {
+    background: #c62828;
 }
 
 .loading-overlay {
     position: absolute;
-    top: 0; 
-    left: 0; 
-    right: 0; 
+    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
     background: rgba(255,255,255,0.8);
     display: flex;
@@ -550,13 +587,13 @@ tr:hover {
     border: 4px solid rgba(0,0,0,0.1);
     border-left-color: #2e7d32;
     border-radius: 50%;
-    width: 40px; 
+    width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin { 
-    to { transform: rotate(360deg); } 
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .book-footer {
@@ -611,10 +648,10 @@ tr:hover {
 }
 
 @keyframes pulse-scale {
-    0% { 
+    0% {
         transform: translateY(-50%) scale(1);
     }
-    100% { 
+    100% {
         transform: translateY(-50%) scale(1.1);
     }
 }
@@ -713,6 +750,126 @@ textarea {
 .add-button-container {
     text-align: center;
     margin-top: 20px;
+}
+
+/* ===== СТИЛИ ДЛЯ МНОЖЕСТВЕННЫХ ПЕРЕВОДОВ ===== */
+.translation-input-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.translation-input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e0d9c0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fff;
+    transition: all 0.3s;
+    font-family: 'Georgia', serif;
+}
+
+.translation-input:focus {
+    border-color: #2e7d32;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(46,125,50,0.2);
+}
+
+/* Убираем отступ для первого поля без бейджа */
+.translation-input-wrapper:first-child:not(:has(.part-of-speech-badge)) .translation-input {
+    padding-left: 14px;
+}
+
+/* Для полей с бейджем - стандартный отступ */
+.translation-input-wrapper:has(.part-of-speech-badge) .translation-input {
+    padding-left: 60px;
+}
+
+/* Для полей с кнопками справа */
+.translation-input-wrapper:has(.add-translation-btn) .translation-input,
+.translation-input-wrapper:has(.remove-translation-btn) .translation-input {
+    padding-right: 45px;
+}
+
+.part-of-speech-badge {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+    pointer-events: none;
+}
+
+/* Кнопка добавления перевода */
+.add-translation-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #2e7d32;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-translation-btn:hover {
+    background: #e8f5e9;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.add-translation-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+}
+
+.add-translation-btn:disabled:hover {
+    background: none;
+    transform: translateY(-50%);
+}
+
+/* Кнопка удаления перевода */
+.remove-translation-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #c62828;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.remove-translation-btn:hover {
+    background: #ffebee;
+    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
 }
 
 /* ===== КАРТОЧКИ СЛОВ (ВЕСЬ СЛОВАРЬ) - ИСПРАВЛЕННЫЕ СТИЛИ ===== */
@@ -943,57 +1100,57 @@ textarea {
         padding: 0;
         height: 100vh;
     }
-    
-    .book-container { 
-        flex-direction: column-reverse; 
+
+    .book-container {
+        flex-direction: column-reverse;
         width: 100vw;
         height: 100vh;
         max-width: none;
         border-radius: 0;
         min-height: auto;
     }
-    
-    .bookmarks-sidebar { 
-        width: 100%; 
+
+    .bookmarks-sidebar {
+        width: 100%;
         height: 60px;
-        display: flex; 
+        display: flex;
         flex-direction: row;
-        overflow-x: auto; 
-        padding: 0; 
-        border-left: none; 
-        border-top: 1px solid #e8e0c9; 
+        overflow-x: auto;
+        padding: 0;
+        border-left: none;
+        border-top: 1px solid #e8e0c9;
     }
-    
-    .bookmark { 
-        padding: 10px 20px; 
-        border-left: none; 
-        border-bottom: 4px solid transparent; 
-        white-space: nowrap; 
+
+    .bookmark {
+        padding: 10px 20px;
+        border-left: none;
+        border-bottom: 4px solid transparent;
+        white-space: nowrap;
         flex-shrink: 0;
         min-width: fit-content;
         height: 100%;
         align-items: center;
         justify-content: center;
     }
-    
-    .bookmark.active { 
-        border-bottom: 4px solid #2e7d32; 
+
+    .bookmark.active {
+        border-bottom: 4px solid #2e7d32;
     }
-    
-    .input-row { 
-        flex-direction: column; 
-        gap: 15px; 
+
+    .input-row {
+        flex-direction: column;
+        gap: 15px;
     }
-    
-    .book-title { 
-        font-size: 1.8rem; 
+
+    .book-title {
+        font-size: 1.8rem;
     }
-    
+
     .content-area {
         height: calc(100vh - 70px);
         overflow-y: auto;
     }
-    
+
     .page {
         padding: 20px;
         height: 100%;
@@ -1057,7 +1214,7 @@ textarea {
         width: 34px;
         height: 34px;
     }
-    
+
     .voice-record-btn i {
         font-size: 1.2rem;
     }
@@ -1074,11 +1231,11 @@ textarea {
     .word-text {
         font-size: 2rem;
     }
-    
+
     .word-translation {
         font-size: 1.2rem;
     }
-    
+
     .nav-btn {
         width: 45px;
         height: 45px;
@@ -1098,46 +1255,83 @@ textarea {
         gap: 10px;
         text-align: center;
     }
-    
+
     .refresh-btn {
         align-self: center;
         margin-right: 0;
     }
-    
+
     .searched-word {
         font-size: 1.5rem;
     }
-    
+
     .user-word-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 5px;
     }
-    
+
     /* Стили для карточек других пользователей на мобильных */
     .other-word-second-line {
         flex-direction: row;
         align-items: center;
     }
-    
+
     .other-word-stats {
         gap: 10px;
     }
-    
+
     .other-word-meta {
         gap: 6px;
     }
-    
+
     /* Убедимся, что текст не переносится на маленьких экранах */
     .other-word-text-container {
         flex-wrap: nowrap;
         overflow: hidden;
     }
-    
+
     .other-word-text,
     .other-word-translation {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    /* Мобильные стили для множественных переводов */
+    .translation-input-wrapper:has(.part-of-speech-badge) .translation-input {
+        padding-left: 55px;
+    }
+
+    .part-of-speech-badge {
+        left: 8px;
+        font-size: 0.75rem;
+        padding: 3px 6px;
+        min-width: 35px;
+    }
+
+    .add-translation-btn,
+    .remove-translation-btn {
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+    }
+
+    .translation-input-wrapper:has(.add-translation-btn) .translation-input,
+    .translation-input-wrapper:has(.remove-translation-btn) .translation-input {
+        padding-right: 40px;
+    }
+
+    /* Мобильные стили для кнопок управления словом */
+    .word-actions {
+        max-width: 180px;
+        gap: 8px;
+    }
+
+    .edit-word-btn,
+    .delete-word-btn {
+        font-size: 0.85rem;
+        padding: 8px 16px;
     }
 }

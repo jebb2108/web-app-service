@@ -42,7 +42,11 @@
 
                 <div class="form-group">
                     <label for="translation"><i class="fas fa-language"></i> Перевод слову</label>
-                    <input type="text" id="translation" placeholder="Введите перевод" autocomplete="off" />
+                    <div id="translationsContainer">
+                        <div class="translation-input-wrapper">
+                            <input type="text" class="translation-input" placeholder="Введите перевод" autocomplete="off" />
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -53,7 +57,7 @@
                             <i class="fas fa-chevron-right"></i>
                         </div>
                         <select id="partOfSpeech" style="display: none;">
-                            <option value="">Выбрать часть речи</option> <!-- Добавленная строка -->
+                            <option value="">Выбрать часть речи</option>
                             <option value="noun">Существительное</option>
                             <option value="verb">Глагол</option>
                             <option value="adjective">Прилагательное</option>
@@ -65,7 +69,7 @@
 
                 <div class="form-group context-group">
                     <label for="context">
-                        <i class="fas fa-comment"></i> Контекст 
+                        <i class="fas fa-comment"></i> Контекст
                         <span class="optional-text">(необязательно)</span>
                     </label>
                     <textarea id="context" placeholder="Введите контекст использования слова" rows="4"></textarea>
@@ -81,7 +85,7 @@
                 <div class="search-header-default">
                     <h2 class="page-title"><i class="fas fa-search"></i> Найди перевод другого человека </h2>
                 </div>
-                
+
                 <div class="search-header-result" style="display: none;">
                     <button id="refreshSearch" class="refresh-btn"><i class="fas fa-arrow-left"></i></button>
                     <div class="searched-word-container">
@@ -105,7 +109,7 @@
             <section id="all-words" class="page">
                 <div class="card-container" id="wordsCardContainer">
                     <div class="loading-overlay" id="wordsLoading"><div class="spinner"></div></div>
-        
+
                     <div class="word-card" id="wordCard" style="display: none;">
                         <div class="word-card-content">
                             <div class="word-main">
@@ -113,19 +117,19 @@
                                 <div class="word-translation" id="cardTranslation"></div>
                                 <div class="word-pos" id="cardPos"></div>
                             </div>
-                
+
                             <div class="word-context" id="cardContextContainer">
                                 <h4>Контекст:</h4>
                                 <p class="context-text" id="cardContext"></p>
                             </div>
-                
+
                             <div class="word-audio" id="cardAudioContainer">
                                 <button class="audio-btn" id="playAudioBtn">
                                     <i class="fas fa-play"></i> Воспроизвести
                                 </button>
                             </div>
                         </div>
-            
+
                         <div class="card-navigation">
                             <button class="nav-btn prev-btn" id="prevWordBtn">
                                 <i class="fas fa-chevron-left"></i>
@@ -136,11 +140,16 @@
                             </button>
                         </div>
                     </div>
-        
-                    <!-- Новая кнопка удаления под карточкой -->
-                    <button class="delete-word-btn" id="deleteCardBtn" style="display: none;">
-                       <i class="fas fa-trash"></i> Удалить из словаря
-                    </button>
+
+                    <!-- Кнопки управления словом под карточкой -->
+                    <div class="word-actions" id="wordActions" style="display: none;">
+                        <button class="edit-word-btn" id="editCardBtn">
+                           <i class="fas fa-edit"></i> Редактировать
+                        </button>
+                        <button class="delete-word-btn" id="deleteCardBtn">
+                           <i class="fas fa-trash"></i> Удалить из словаря
+                        </button>
+                    </div>
         
                     <div class="empty-state" id="emptyState" style="display: none;">
                         <div class="empty-icon">
