@@ -628,12 +628,12 @@ function initializeCardMenu() {
             menuTrigger.classList.toggle('active');
             menuButtons.classList.toggle('active');
 
-            // Меняем иконку с плюса на крестик (поворот на 45 градусов делается через CSS)
+            // Меняем иконку
             const icon = menuTrigger.querySelector('i');
             if (menuTrigger.classList.contains('active')) {
-                // При активном состоянии - меняем на крестик (плюс повернется на 45 градусов в CSS)
+                icon.className = 'fas fa-times';
             } else {
-                // Возвращаем обычный плюс
+                icon.className = 'fas fa-plus';
             }
         }
 
@@ -642,7 +642,7 @@ function initializeCardMenu() {
         if (editBtn) {
             const wordId = editBtn.getAttribute('data-word-id');
             if (wordId) {
-                closeCardMenu();
+                // Не закрываем меню, чтобы крестик оставался красным
                 enterEditMode(wordId);
             }
         }
@@ -652,7 +652,7 @@ function initializeCardMenu() {
         if (deleteBtn) {
             const wordId = deleteBtn.getAttribute('data-word-id');
             if (wordId) {
-                closeCardMenu();
+                // Не закрываем меню, чтобы крестик оставался красным
                 deleteWord(wordId);
             }
         }
@@ -660,7 +660,7 @@ function initializeCardMenu() {
         // Обработчик для AI кнопки (заглушка)
         const aiBtn = e.target.closest('.ai-menu-btn');
         if (aiBtn) {
-            closeCardMenu();
+            // Не закрываем меню, чтобы крестик оставался красным
             showNotification('AI функция находится в разработке', 'success');
         }
     });
@@ -685,7 +685,7 @@ function closeCardMenu() {
         menuTrigger.classList.remove('active');
         menuButtons.classList.remove('active');
         const icon = menuTrigger.querySelector('i');
-        icon.className = 'fas fa-ellipsis-h';
+        icon.className = 'fas fa-plus';
     }
 }
 
@@ -694,14 +694,12 @@ function displayCurrentCard() {
     const wordCard = document.getElementById('wordCard');
     const emptyState = document.getElementById('emptyState');
     const cardCounter = document.getElementById('cardCounter');
-    // const wordActions = document.getElementById('wordActions'); // Убираем
 
     console.log('Display current card, words count:', currentWords.length);
     console.log('Current word is_public:', currentWords[currentCardIndex]?.is_public);
 
     if (currentWords.length === 0) {
         if (wordCard) wordCard.style.display = 'none';
-        // if (wordActions) wordActions.style.display = 'none'; // Убираем
         if (emptyState) emptyState.style.display = 'block';
         return;
     }
@@ -719,15 +717,73 @@ function displayCurrentCard() {
     if (cardWordElement) cardWordElement.textContent = currentWord.word || '';
 
     // Обрабатываем переводы (могут быть массивом или строкой)
-    let translationText = '';
+    let translations = [];
     if (Array.isArray(currentWord.translation)) {
-        translationText = currentWord.translation.join(', ');
+        translations = currentWord.translation;
     } else if (typeof currentWord.translation === 'string') {
-        translationText = currentWord.translation;
+        translations = [currentWord.translation];
     }
 
-    if (cardTranslationElement) cardTranslationElement.textContent = translationText;
-    if (cardPosElement) cardPosElement.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
+    // Очищаем элемент перевода
+    if (cardTranslationElement) {
+        cardTranslationElement.innerHTML = '';
+        cardTranslationElement.className = 'word-translation';
+
+        if (translations.length === 0) {
+            cardTranslationElement.style.display = 'none';
+        } else if (translations.length === 1) {
+            // Один перевод - отображаем как обычно
+            cardTranslationElement.textContent = translations[0];
+            cardTranslationElement.style.display = 'block';
+
+            // Отображаем часть речи отдельно
+            if (cardPosElement) {
+                cardPosElement.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
+                cardPosElement.style.display = 'block';
+            }
+        } else {
+            // Несколько переводов - отображаем в столбец
+            cardTranslationElement.classList.add('multiple');
+
+            const translationList = document.createElement('ul');
+            translationList.className = 'translation-list';
+
+            translations.forEach((translation, index) => {
+                const translationItem = document.createElement('li');
+                translationItem.className = 'translation-item';
+
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'translation-number';
+                numberSpan.textContent = `${index + 1}.`;
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'translation-text';
+                textSpan.textContent = translation;
+
+                const posSpan = document.createElement('span');
+                posSpan.className = 'translation-pos';
+                posSpan.textContent = `(${getPartOfSpeechName(currentWord.part_of_speech || '')})`;
+
+                translationItem.appendChild(numberSpan);
+                translationItem.appendChild(textSpan);
+                translationItem.appendChild(posSpan);
+                translationList.appendChild(translationItem);
+            });
+
+            cardTranslationElement.appendChild(translationList);
+            cardTranslationElement.style.display = 'block';
+
+            // Скрываем отдельную часть речи, так как она теперь рядом с каждым переводом
+            if (cardPosElement) {
+                cardPosElement.style.display = 'none';
+            }
+        }
+    }
+
+    // Если переводов нет, скрываем часть речи
+    if (translations.length === 0 && cardPosElement) {
+        cardPosElement.style.display = 'none';
+    }
 
     // Устанавливаем data-word-id для кнопок меню
     const menuEditBtn = wordCard.querySelector('.edit-menu-btn');

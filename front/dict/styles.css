@@ -1051,13 +1051,57 @@ textarea {
     margin-bottom: 10px;
 }
 
-/* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
-.word-card-menu {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    z-index: 100;
+/* ===== СТИЛИ ДЛЯ ОТОБРАЖЕНИЯ НЕСКОЛЬКИХ ПЕРЕВОДОВ ===== */
+.word-translation.multiple {
+    text-align: left;
+    width: 100%;
 }
+
+.translation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.translation-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #f0e6d2;
+}
+
+.translation-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.translation-number {
+    font-weight: bold;
+    color: #2e7d32;
+    min-width: 25px;
+    padding-right: 10px;
+    text-align: center;
+}
+
+.translation-text {
+    flex-grow: 1;
+    color: #5a5a5a;
+    font-size: 1.4rem;
+    line-height: 1.4;
+}
+
+.translation-pos {
+    color: #888;
+    font-size: 0.9rem;
+    font-style: italic;
+    min-width: 60px;
+    text-align: right;
+    padding-left: 10px;
+}
+
+/* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
 
 .menu-trigger {
     width: 32px;
@@ -1074,7 +1118,6 @@ textarea {
     font-size: 1.4rem;
     z-index: 101;
     position: relative;
-    margin: 5px; /* сдвигаем глубже внутрь */
 }
 
 .menu-trigger:hover {
@@ -1131,20 +1174,20 @@ textarea {
     opacity: 1;
 }
 
-/* Расположение кнопок */
+/* Расположение кнопок - все на одном уровне */
 .menu-btn.edit-menu-btn {
-    top: -55px; /* вверх от триггера */
-    left: 0;
+    top: 0;
+    left: -60px; /* влево от триггера */
 }
 
 .menu-btn.delete-menu-btn {
-    top: 0;
-    left: -55px; /* влево от триггера */
+    top: -60px; /* вверх от триггера */
+    left: 0;
 }
 
 .menu-btn.ai-menu-btn {
-    top: -75px; /* выше, чем edit, и левее */
-    left: -75px;
+    top: 0;
+    left: 60px; /* вправо от триггера */
 }
 
 .menu-btn:hover {
@@ -1163,71 +1206,6 @@ textarea {
 
 .menu-buttons.active .ai-menu-btn {
     transition: all 0.3s ease 0.3s;
-}
-
-/* Для мобильных устройств */
-@media (max-width: 768px) {
-    .word-card-menu {
-        top: 10px;
-        left: 10px;
-    }
-
-    .menu-trigger {
-        width: 28px;
-        height: 28px;
-        font-size: 1.2rem;
-    }
-
-    .menu-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 1rem;
-    }
-
-    .menu-btn.edit-menu-btn {
-        top: -45px;
-    }
-
-    .menu-btn.delete-menu-btn {
-        left: -45px;
-    }
-
-    .menu-btn.ai-menu-btn {
-        top: -60px;
-        left: -60px;
-    }
-}
-
-/* Для мобильных устройств */
-@media (max-width: 768px) {
-    .word-card-menu {
-        top: 10px;
-        left: 10px;
-    }
-
-    .menu-trigger {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
-
-    .menu-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-    }
-
-    .menu-btn.edit-menu-btn {
-        top: -50px;
-    }
-
-    .menu-btn.delete-menu-btn {
-        left: -50px;
-    }
-
-    .menu-btn.ai-menu-btn {
-        left: 50px;
-    }
 }
 
 /* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА - ИСПРАВЛЕННЫЙ ===== */
@@ -1518,8 +1496,8 @@ textarea {
 
     /* Стили карточек слов */
     .word-card-menu {
-        top: 10px;
-        left: 10px;
+        top: 15px;
+        left: 15px;
     }
 
     .menu-trigger {
@@ -1535,15 +1513,23 @@ textarea {
     }
 
     .menu-btn.edit-menu-btn {
-        top: -45px;
-    }
-
-    .menu-btn.delete-menu-btn {
         left: -45px;
     }
 
+    .menu-btn.delete-menu-btn {
+        top: -45px;
+    }
+
     .menu-btn.ai-menu-btn {
-        top: -60px;
-        left: -60px;
+        left: 45px;
+    }
+
+    .translation-text {
+        font-size: 1.2rem;
+    }
+
+    .translation-pos {
+        font-size: 0.8rem;
+        min-width: 50px;
     }
 }
