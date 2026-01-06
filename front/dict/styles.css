@@ -1056,7 +1056,7 @@ textarea {
 .word-translation.multiple {
     text-align: left;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .translation-list {
@@ -1145,7 +1145,7 @@ textarea {
 
 .menu-trigger.active {
     color: #c62828;
-    transform: rotate(45deg);
+    transform: rotate(45deg) !important;
     background: transparent;
 }
 
@@ -1514,8 +1514,8 @@ textarea {
 
     /* Мобильные стили для меню карточки */
     .word-card-menu {
-        top: 20px;
-        left: 20px;
+        top: 25px;
+        left: 25px;
     }
 
     .menu-trigger {
@@ -1554,7 +1554,7 @@ textarea {
     }
 
     .word-translation.multiple {
-        margin-top: 15px;
+        margin-top: 20px;
     }
 
     .word-translation:not(.multiple) {

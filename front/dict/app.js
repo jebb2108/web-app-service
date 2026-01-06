@@ -625,16 +625,23 @@ function initializeCardMenu() {
         const menuTrigger = e.target.closest('.menu-trigger');
         if (menuTrigger) {
             const menuButtons = wordCard.querySelector('.menu-buttons');
-            menuTrigger.classList.toggle('active');
-            menuButtons.classList.toggle('active');
+            const isActive = !menuTrigger.classList.contains('active');
 
-            // Меняем иконку
-            const icon = menuTrigger.querySelector('i');
-            if (menuTrigger.classList.contains('active')) {
-                icon.className = 'fas fa-times';
-            } else {
+            // Убираем активность у всех элементов меню
+            if (!isActive) {
+                menuTrigger.classList.remove('active');
+                menuButtons.classList.remove('active');
+                const icon = menuTrigger.querySelector('i');
                 icon.className = 'fas fa-plus';
+            } else {
+                menuTrigger.classList.add('active');
+                menuButtons.classList.add('active');
+                const icon = menuTrigger.querySelector('i');
+                icon.className = 'fas fa-times';
             }
+
+            // Предотвращаем дальнейшую обработку события
+            e.stopPropagation();
         }
 
         // Обработчик для кнопки редактирования в меню
@@ -642,7 +649,6 @@ function initializeCardMenu() {
         if (editBtn) {
             const wordId = editBtn.getAttribute('data-word-id');
             if (wordId) {
-                // Не закрываем меню, чтобы крестик оставался красным
                 enterEditMode(wordId);
             }
         }
@@ -652,7 +658,6 @@ function initializeCardMenu() {
         if (deleteBtn) {
             const wordId = deleteBtn.getAttribute('data-word-id');
             if (wordId) {
-                // Не закрываем меню, чтобы крестик оставался красным
                 deleteWord(wordId);
             }
         }
@@ -660,7 +665,6 @@ function initializeCardMenu() {
         // Обработчик для AI кнопки (заглушка)
         const aiBtn = e.target.closest('.ai-menu-btn');
         if (aiBtn) {
-            // Не закрываем меню, чтобы крестик оставался красным
             showNotification('AI функция находится в разработке', 'success');
         }
     });
@@ -668,7 +672,15 @@ function initializeCardMenu() {
     // Закрытие меню при клике вне карточки
     document.addEventListener('click', function(e) {
         if (!wordCard.contains(e.target)) {
-            closeCardMenu();
+            const menuTrigger = wordCard.querySelector('.menu-trigger');
+            const menuButtons = wordCard.querySelector('.menu-buttons');
+
+            if (menuTrigger && menuTrigger.classList.contains('active')) {
+                menuTrigger.classList.remove('active');
+                menuButtons.classList.remove('active');
+                const icon = menuTrigger.querySelector('i');
+                icon.className = 'fas fa-plus';
+            }
         }
     });
 }
