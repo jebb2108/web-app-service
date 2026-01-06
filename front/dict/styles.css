@@ -1229,8 +1229,8 @@ textarea {
 /* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА ===== */
 .public-word-indicator {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     color: #2e7d32;
     font-size: 1.6rem;
     opacity: 0.9;
@@ -1514,8 +1514,8 @@ textarea {
 
     /* Мобильные стили для меню карточки */
     .word-card-menu {
-        top: 25px;
-        left: 25px;
+        top: 15px;
+        left: 15px;
     }
 
     .menu-trigger {
