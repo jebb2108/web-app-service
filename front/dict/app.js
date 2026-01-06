@@ -695,9 +695,6 @@ function displayCurrentCard() {
     const emptyState = document.getElementById('emptyState');
     const cardCounter = document.getElementById('cardCounter');
 
-    console.log('Display current card, words count:', currentWords.length);
-    console.log('Current word is_public:', currentWords[currentCardIndex]?.is_public);
-
     if (currentWords.length === 0) {
         if (wordCard) wordCard.style.display = 'none';
         if (emptyState) emptyState.style.display = 'block';
@@ -761,12 +758,13 @@ function displayCurrentCard() {
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'translation-content';
 
-                // Часть речи (еле заметным серым шрифтом)
+                // Часть речи (сокращение с точкой)
                 const posSpan = document.createElement('span');
                 posSpan.className = 'translation-pos';
-                posSpan.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
+                const abbreviation = getPartOfSpeechAbbreviation(currentWord.part_of_speech || '');
+                posSpan.textContent = abbreviation ? `${abbreviation}.` : '';
 
-                // Перевод (шрифтом поменьше)
+                // Перевод (в той же строке)
                 const textSpan = document.createElement('span');
                 textSpan.className = 'translation-text';
                 textSpan.textContent = translation;
@@ -782,7 +780,7 @@ function displayCurrentCard() {
             cardTranslationElement.appendChild(translationList);
             cardTranslationElement.style.display = 'block';
 
-            // Скрываем отдельную часть речи, так как она теперь отображается над каждым переводом
+            // Скрываем отдельную часть речи, так как она теперь в той же строке
             if (cardPosElement) {
                 cardPosElement.style.display = 'none';
             }
@@ -844,7 +842,6 @@ function displayCurrentCard() {
             const cardContent = wordCard.querySelector('.word-card-content');
             if (cardContent) {
                 cardContent.appendChild(publicIndicator);
-                console.log('Public globe indicator added');
             }
         }
     }

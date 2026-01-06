@@ -1056,7 +1056,6 @@ textarea {
     text-align: left;
     width: 100%;
     margin-top: 15px;
-    padding-left: 15px; /* Отступ для выравнивания с числами */
 }
 
 .translation-list {
@@ -1068,9 +1067,8 @@ textarea {
 
 .translation-item {
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    position: relative;
+    align-items: baseline;
+    margin-bottom: 10px;
 }
 
 .translation-item:last-child {
@@ -1081,7 +1079,7 @@ textarea {
     font-weight: bold;
     color: #2e7d32;
     width: 25px;
-    padding-right: 10px;
+    padding-right: 5px;
     text-align: right;
     font-size: 1rem;
     flex-shrink: 0;
@@ -1090,50 +1088,35 @@ textarea {
 .translation-content {
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
+    align-items: baseline;
+    flex-wrap: wrap;
 }
 
 .translation-pos {
-    color: #aaa; /* Еле заметный серый */
+    color: #aaa;
     font-size: 0.8rem;
     font-style: italic;
-    margin-bottom: 3px;
+    margin-right: 8px;
     font-weight: 300;
 }
 
 .translation-text {
     color: #5a5a5a;
-    font-size: 1.1rem; /* Шрифт поменьше */
+    font-size: 1.1rem;
     line-height: 1.4;
 }
 
 /* Для одного перевода добавляем отступ */
 .word-translation:not(.multiple) {
     margin-top: 5px;
-    font-size: 1.3rem; /* Немного меньше, чем у слова */
-}
-
-
-/* Отступы для заголовка слова */
-.word-text {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #2e7d32;
-    margin-bottom: 5px; /* Уменьшаем отступ снизу */
-    text-transform: lowercase;
-}
-
-.word-main {
-    margin-bottom: 10px;
+    font-size: 1.3rem;
 }
 
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
-
-
 .word-card-menu {
     position: absolute;
-    top: 20px; /* Выравниваем с иконкой публичности */
-    left: 20px; /* Отступ от левого края */
+    top: 20px;
+    left: 20px;
     z-index: 100;
 }
 
@@ -1143,7 +1126,7 @@ textarea {
     border-radius: 50%;
     background: transparent;
     border: none;
-    color: #B8A68B; /* бледно-бежевый */
+    color: #B8A68B;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -1155,12 +1138,12 @@ textarea {
 }
 
 .menu-trigger:hover {
-    color: #9C8B70; /* чуть темнее при наведении */
+    color: #9C8B70;
     transform: scale(1.1);
 }
 
 .menu-trigger.active {
-    color: #c62828; /* красный цвет для крестика */
+    color: #c62828;
     transform: rotate(45deg);
     background: transparent;
 }
@@ -1191,7 +1174,7 @@ textarea {
     border-radius: 50%;
     border: none;
     background: transparent;
-    color: #B8A68B; /* тот же бледно-бежевый цвет */
+    color: #B8A68B;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -1208,20 +1191,20 @@ textarea {
     opacity: 1;
 }
 
-/* Расположение кнопок - прямоУгольный треугольник */
+/* Расположение кнопок - прямоугольный треугольник */
 .menu-btn.edit-menu-btn {
     top: 0;
-    left: -50px; /* слева от триггера */
+    left: -50px;
 }
 
 .menu-btn.delete-menu-btn {
-    top: -50px; /* над edit */
-    left: 0; /* правее AI (относительно edit) */
+    top: -50px;
+    left: 0;
 }
 
 .menu-btn.ai-menu-btn {
-    top: -50px; /* над edit */
-    left: -50px; /* слева от delete, над edit */
+    top: -50px;
+    left: -50px;
 }
 
 .menu-btn:hover {
@@ -1242,7 +1225,7 @@ textarea {
     transition: all 0.3s ease 0.3s;
 }
 
-/* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА - ИСПРАВЛЕННЫЙ ===== */
+/* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА ===== */
 .public-word-indicator {
     position: absolute;
     top: 20px;
@@ -1528,7 +1511,7 @@ textarea {
         padding: 8px 16px;
     }
 
-    /* Стили карточек слов */
+    /* Мобильные стили для меню карточки */
     .word-card-menu {
         top: 15px;
         left: 15px;
@@ -1547,23 +1530,33 @@ textarea {
     }
 
     .menu-btn.edit-menu-btn {
-        left: -45px;
+        left: -40px;
     }
 
     .menu-btn.delete-menu-btn {
-        top: -45px;
+        top: -40px;
     }
 
     .menu-btn.ai-menu-btn {
-        left: 45px;
+        top: -40px;
+        left: -40px;
     }
 
+    /* Мобильные стили для отображения нескольких переводов */
     .translation-text {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 
     .translation-pos {
-        font-size: 0.8rem;
-        min-width: 50px;
+        font-size: 0.75rem;
+        margin-right: 6px;
+    }
+
+    .word-translation.multiple {
+        margin-top: 10px;
+    }
+
+    .word-translation:not(.multiple) {
+        font-size: 1.2rem;
     }
 }
