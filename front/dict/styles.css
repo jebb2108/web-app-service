@@ -1163,8 +1163,8 @@ textarea {
 /* ===== КНИЖНЫЕ ЗАКЛАДКИ НАД КАРТОЧКОЙ ===== */
 .menu-bookmarks {
     position: absolute;
-    top: -60px;
-    left: 0;
+    top: -35px; /* Опускаем закладки ниже, чтобы они частично скрывались под карточкой */
+    left: -20px; /* Сдвигаем все закладки влево */
     display: flex;
     gap: 0; /* Убираем промежутки между закладками */
     opacity: 0;
@@ -1172,7 +1172,6 @@ textarea {
     transform: translateY(10px);
     transition: all 0.3s ease;
     pointer-events: none;
-    padding-left: 0; /* Убираем левый отступ */
 }
 
 .menu-bookmarks.active {
@@ -1188,56 +1187,64 @@ textarea {
     border-top: 3px solid #2e7d32; /* ЗЕЛЕНАЯ ТОЛЬКО ВЕРХНЯЯ ГРАНИЦА */
     border-bottom: none;
     border-radius: 8px 8px 0 0;
-    padding: 8px 15px;
+    padding: 8px 20px; /* Увеличиваем горизонтальный padding для большей ширины */
     color: #5a5a5a;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 50px;
-    height: 40px;
+    min-width: 60px; /* Увеличиваем минимальную ширину */
+    height: 45px; /* Увеличиваем высоту */
     position: relative;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    margin-left: 0; /* Убираем отступ слева */
+    margin-left: 0;
     margin-right: -2px; /* Перекрываем границы для плотного прилегания */
+    z-index: 10; /* Чтобы закладки были поверх карточки */
 }
 
-/* Закругленные уголки внизу */
+/* Закругленные уголки внизу - удлиняем их для эффекта выхода из-под карточки */
 .bookmark-btn::after {
     content: '';
     position: absolute;
-    bottom: -10px;
+    bottom: -15px; /* Увеличиваем длину "язычка" закладки */
     left: -2px;
     right: -2px;
-    height: 10px;
+    height: 15px; /* Увеличиваем высоту "язычка" */
     background: #fff; /* Белый фон как у карточки */
-    border-left: 2px solid #f0e6d2; /* Та же рамка, что и у карточки */
-    border-right: 2px solid #f0e6d2; /* Та же рамка, что и у карточки */
+    border-left: 2px solid #f0e6d2;
+    border-right: 2px solid #f0e6d2;
     border-radius: 0 0 8px 8px;
+    z-index: 9; /* Ниже основной части закладки */
 }
 
 .bookmark-btn i {
-    font-size: 1rem;
+    font-size: 1.2rem; /* Немного увеличиваем иконки */
     transition: all 0.3s ease;
 }
 
 /* Индивидуальные стили для каждой закладки - ТОЛЬКО ИКОНКИ */
 .bookmark-btn.edit-bookmark {
-    z-index: 3;
+    z-index: 13;
 }
 
 .bookmark-btn.delete-bookmark {
-    z-index: 2;
+    z-index: 12;
 }
 
 .bookmark-btn.ai-bookmark {
-    z-index: 1;
+    z-index: 11;
 }
 
 .bookmark-btn:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+}
+
+/* Увеличиваем область псевдоэлемента при наведении */
+.bookmark-btn:hover::after {
+    height: 17px; /* Немного увеличиваем "язычок" при наведении */
+    bottom: -17px;
 }
 
 .bookmark-btn.edit-bookmark:hover {
@@ -1250,19 +1257,6 @@ textarea {
 
 .bookmark-btn.ai-bookmark:hover {
     color: #9c27b0; /* Меняем только цвет иконки */
-}
-
-/* Псевдоэлемент после для hover состояния */
-.bookmark-btn.edit-bookmark:hover::after {
-    background: #fff; /* Оставляем белый фон */
-}
-
-.bookmark-btn.delete-bookmark:hover::after {
-    background: #fff; /* Оставляем белый фон */
-}
-
-.bookmark-btn.ai-bookmark:hover::after {
-    background: #fff; /* Оставляем белый фон */
 }
 
 /* Анимация появления закладок с задержкой */
@@ -1449,12 +1443,39 @@ textarea {
         font-size: 1.2rem;
     }
 
+    /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ КАРТОЧКИ ===== */
     .word-card {
-        margin: 10px;
-        padding: 20px;
-        min-height: 300px;
-        margin-bottom: 15px;
-        order: 1;
+        position: relative;
+        overflow: visible; /* Разрешаем выход элементов за пределы карточки */
+        z-index: 1; /* Устанавливаем базовый z-index для карточки */
+    }
+
+    .word-card-menu {
+        position: absolute;
+        top: 15px;
+        left: 25px;
+        z-index: 100;
+    }
+
+    /* Создаем эффект, что закладки выходят из-под карточки */
+    .word-card::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: #fff;
+        z-index: 5; /* Ниже закладок, но выше карточки */
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Чтобы контент карточки не перекрывал закладки */
+    .word-card-content {
+        position: relative;
+        z-index: 2;
     }
 
     .word-text {
@@ -1563,26 +1584,29 @@ textarea {
     }
 
     .menu-bookmarks {
-        top: -55px;
-        left: 0;
-        gap: 0;
-        padding-left: 0;
+        top: -30px;
+        left: -15px; /* Меньший сдвиг для мобильных */
     }
 
     .bookmark-btn {
-        min-width: 45px;
-        height: 35px;
-        padding: 6px 10px;
+        min-width: 55px;
+        height: 40px;
+        padding: 8px 15px;
         margin-right: -2px;
     }
 
     .bookmark-btn i {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
     }
 
     .bookmark-btn::after {
-        bottom: -8px;
-        height: 8px;
+        bottom: -12px;
+        height: 12px;
+    }
+
+    .bookmark-btn:hover::after {
+        height: 14px;
+        bottom: -14px;
     }
 
     /* Обеспечиваем такое же отображение на мобильном */
@@ -1598,14 +1622,16 @@ textarea {
         overflow: visible;
     }
 
-    /* Защита от выхода за левый край */
-    .word-card-menu {
-        left: max(15px, 5%);
-    }
+    /* Защита от выхода за левый край на очень маленьких экранах */
+    @media (max-width: 400px) {
+        .menu-bookmarks {
+            left: -10px;
+        }
 
-    .menu-bookmarks {
-        left: 0;
-        right: auto;
+        .bookmark-btn {
+            min-width: 50px;
+            padding: 8px 12px;
+        }
     }
 
     /* Защита от выхода за левый край */
