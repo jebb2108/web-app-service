@@ -1183,8 +1183,9 @@ textarea {
 }
 
 .bookmark-btn {
-    background: rgba(40, 40, 40, 0.15); /* Полупрозрачный темный фон */
-    border: 2px solid #e0d9c0;
+    background: #fff; /* Белый фон как у карточки */
+    border: 2px solid #f0e6d2; /* Та же рамка, что и у карточки */
+    border-top: 3px solid #2e7d32; /* ЗЕЛЕНАЯ ТОЛЬКО ВЕРХНЯЯ ГРАНИЦА */
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     padding: 8px 15px;
@@ -1210,15 +1211,10 @@ textarea {
     left: -2px;
     right: -2px;
     height: 10px;
-    background: rgba(40, 40, 40, 0.15); /* Полупрозрачный темный фон */
-    border-left: 2px solid #e0d9c0;
-    border-right: 2px solid #e0d9c0;
+    background: #fff; /* Белый фон как у карточки */
+    border-left: 2px solid #f0e6d2; /* Та же рамка, что и у карточки */
+    border-right: 2px solid #f0e6d2; /* Та же рамка, что и у карточки */
     border-radius: 0 0 8px 8px;
-}
-
-/* ЗЕЛЕНЫЕ ВЕРХНИЕ КРАЯ ДЛЯ ВСЕХ ЗАКЛАДОК */
-.bookmark-btn {
-    border-top: 3px solid #2e7d32 !important; /* Зеленый верхний край */
 }
 
 .bookmark-btn i {
@@ -1226,22 +1222,16 @@ textarea {
     transition: all 0.3s ease;
 }
 
-/* Индивидуальные стили для каждой закладки */
+/* Индивидуальные стили для каждой закладки - ТОЛЬКО ИКОНКИ */
 .bookmark-btn.edit-bookmark {
-    background: rgba(248, 245, 236, 0.85); /* Полупрозрачный фон */
-    border-color: #e0d9c0;
     z-index: 3;
 }
 
 .bookmark-btn.delete-bookmark {
-    background: rgba(255, 235, 238, 0.85); /* Полупрозрачный фон */
-    border-color: #ffcdd2;
     z-index: 2;
 }
 
 .bookmark-btn.ai-bookmark {
-    background: rgba(243, 229, 245, 0.85); /* Полупрозрачный фон */
-    border-color: #e1bee7;
     z-index: 1;
 }
 
@@ -1251,34 +1241,28 @@ textarea {
 }
 
 .bookmark-btn.edit-bookmark:hover {
-    background: rgba(232, 224, 201, 0.95);
-    border-color: #2e7d32;
-    color: #2e7d32;
+    color: #2e7d32; /* Меняем только цвет иконки */
 }
 
 .bookmark-btn.delete-bookmark:hover {
-    background: rgba(255, 205, 210, 0.95);
-    border-color: #c62828;
-    color: #c62828;
+    color: #c62828; /* Меняем только цвет иконки */
 }
 
 .bookmark-btn.ai-bookmark:hover {
-    background: rgba(225, 190, 231, 0.95);
-    border-color: #9c27b0;
-    color: #9c27b0;
+    color: #9c27b0; /* Меняем только цвет иконки */
 }
 
 /* Псевдоэлемент после для hover состояния */
 .bookmark-btn.edit-bookmark:hover::after {
-    background: rgba(232, 224, 201, 0.95);
+    background: #fff; /* Оставляем белый фон */
 }
 
 .bookmark-btn.delete-bookmark:hover::after {
-    background: rgba(255, 205, 210, 0.95);
+    background: #fff; /* Оставляем белый фон */
 }
 
 .bookmark-btn.ai-bookmark:hover::after {
-    background: rgba(225, 190, 231, 0.95);
+    background: #fff; /* Оставляем белый фон */
 }
 
 /* Анимация появления закладок с задержкой */
@@ -1612,6 +1596,16 @@ textarea {
     .word-card {
         position: relative;
         overflow: visible;
+    }
+
+    /* Защита от выхода за левый край */
+    .word-card-menu {
+        left: max(15px, 5%);
+    }
+
+    .menu-bookmarks {
+        left: 0;
+        right: auto;
     }
 
     /* Защита от выхода за левый край */
