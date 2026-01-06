@@ -620,26 +620,25 @@ function initializeCardMenu() {
     const wordCard = document.getElementById('wordCard');
     if (!wordCard) return;
 
-    // Находим элементы меню
     const menuTrigger = wordCard.querySelector('.menu-trigger');
+    const menuIcon = wordCard.querySelector('.menu-icon');
     const menuButtons = wordCard.querySelector('.menu-buttons');
 
     // Простой переключатель
     menuTrigger.addEventListener('click', function(e) {
-        e.stopPropagation(); // Останавливаем всплытие
+        e.stopPropagation();
+        e.preventDefault();
 
-        const isActive = this.classList.contains('active');
+        const isActive = this.classList.toggle('active');
 
         if (isActive) {
-            // Закрываем меню
-            this.classList.remove('active');
-            menuButtons.classList.remove('active');
-            this.innerHTML = '<i class="fas fa-plus"></i>'; // Возвращаем плюс
-        } else {
-            // Открываем меню
-            this.classList.add('active');
+            // Меняем иконку на крестик
+            menuIcon.className = 'menu-icon fas fa-times';
             menuButtons.classList.add('active');
-            this.innerHTML = '<i class="fas fa-times"></i>'; // Меняем на крестик
+        } else {
+            // Возвращаем плюс
+            menuIcon.className = 'menu-icon fas fa-plus';
+            menuButtons.classList.remove('active');
         }
     });
 
@@ -674,34 +673,18 @@ function initializeCardMenu() {
     });
 }
 
-// Упрощаем функцию closeCardMenu
 function closeCardMenu() {
     const wordCard = document.getElementById('wordCard');
     if (!wordCard) return;
 
     const menuTrigger = wordCard.querySelector('.menu-trigger');
-    const menuButtons = wordCard.querySelector('.menu-buttons');
-
-    if (menuTrigger && menuButtons) {
-        menuTrigger.classList.remove('active');
-        menuButtons.classList.remove('active');
-        menuTrigger.innerHTML = '<i class="fas fa-plus"></i>';
-    }
-}
-
-// Функция для закрытия меню
-function closeCardMenu() {
-    const wordCard = document.getElementById('wordCard');
-    if (!wordCard) return;
-
-    const menuTrigger = wordCard.querySelector('.menu-trigger');
+    const menuIcon = wordCard.querySelector('.menu-icon');
     const menuButtons = wordCard.querySelector('.menu-buttons');
 
     if (menuTrigger && menuTrigger.classList.contains('active')) {
         menuTrigger.classList.remove('active');
+        menuIcon.className = 'menu-icon fas fa-plus';
         menuButtons.classList.remove('active');
-        const icon = menuTrigger.querySelector('i');
-        icon.className = 'fas fa-plus';
     }
 }
 
