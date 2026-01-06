@@ -862,6 +862,11 @@ async function addWord() {
         }
     });
 
+    if (!currentUserId) {
+        showNotification('Ошибка: Не указан user_id', 'error');
+        return;
+    }
+
     if (!word) {
         showNotification('Пожалуйста, введите слово', 'error');
         return;
@@ -877,46 +882,42 @@ async function addWord() {
         return;
     }
 
-    if (!currentUserId) {
-        showNotification('Ошибка: Не указан user_id', 'error');
-        return;
-    }
-
     // Создаем словари в формате, ожидаемом бэкендом
     const translationDict = {};
-    const partOfSpeechDict = {};
 
     // Получаем информацию о частях речи для каждого перевода
     const translationsContainer = document.getElementById('translationsContainer');
     const translationWrappers = translationsContainer.querySelectorAll('.translation-input-wrapper');
 
-    // Заполняем словари индексами 0, 1, 2
-    for (let i = 0; i < 3; i++) {
-        translationDict[i] = translations[i] || null;
+    for (let i = 0; i < translations.length; i++) {
+        const translation = translations[i];
 
-        // Если есть перевод для этого индекса, получаем его часть речи из бейджа
-        if (translations[i] && i < translationWrappers.length) {
+        // Пропускаем пустые переводы
+        if (!translation || translation.trim() === '') continue;
+
+        let partOfSpeechValue = partOfSpeech; // значение по умолчанию
+
+        // Ищем часть речи в соответствующем wrapper (если он есть)
+        if (i < translationWrappers.length) {
             const wrapper = translationWrappers[i];
             const badge = wrapper.querySelector('.part-of-speech-badge');
 
             if (badge) {
-                // Получаем часть речи из data-атрибута бейджа (должно быть на английском)
                 const badgePartOfSpeech = badge.getAttribute('data-part-of-speech');
-                partOfSpeechDict[i] = badgePartOfSpeech || partOfSpeech;
-            } else {
-                // Если нет бейджа, используем общую часть речи (уже на английском)
-                partOfSpeechDict[i] = partOfSpeech;
+                if (badgePartOfSpeech) {
+                    partOfSpeechValue = badgePartOfSpeech;
+                }
             }
-        } else {
-            partOfSpeechDict[i] = null;
         }
-    }
 
+        // Добавляем в словарь: перевод -> часть речи
+        translationDict[translation] = partOfSpeechValue;
+    }
 
     const payload = {
         user_id: currentUserId,
         word: word.toLowerCase(),
-        translation: translationDict,
+        translations: translationDict,
         part_of_speech: partOfSpeechDict,
         is_public: isPublic,
         context: context

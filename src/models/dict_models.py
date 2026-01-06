@@ -9,8 +9,7 @@ class Word(BaseModel):
     """
     user_id: int = Field(..., description="Уникальный идентификатор пользователя")
     word: Optional[str] = Field(None, description="Слово, которое нужно добавить в словарь")
-    translation: Optional[Dict[int, Any]] = Field(None, description="Перевод слова")
-    part_of_speech: Optional[Dict[int, Any]] = Field(None, description="Часть речи слова")
+    translations: Optional[dict] = Field(None, description="Перевод слова")
     is_public: bool = Field(False, description="Видно ли слово остальным пользователям")
     context: Optional[str] = Field(None, description="Контекст к слову")
     audio: Optional[bytes] = Field(None, description="bytes of audio recording")
