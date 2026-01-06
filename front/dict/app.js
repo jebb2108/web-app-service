@@ -787,11 +787,6 @@ function displayCurrentCard() {
         }
     }
 
-    // Если переводов нет, скрываем часть речи
-    if (translations.length === 0 && cardPosElement) {
-        cardPosElement.style.display = 'none';
-    }
-
     // Устанавливаем data-word-id для кнопок меню
     const menuEditBtn = wordCard.querySelector('.edit-menu-btn');
     const menuDeleteBtn = wordCard.querySelector('.delete-menu-btn');
