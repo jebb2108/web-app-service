@@ -12,6 +12,8 @@ let currentWords = [];
 let currentCardIndex = 0;
 let isEditingMode = false;
 let editingWordId = null;
+let fieldChangedState = {}; // {0: false, 1: false, 2: false} - было ли изменено поле
+let changeTimers = {}; // Таймеры для сохранения изменений
 
 
 // API base — используем origin текущей страницы
@@ -86,6 +88,7 @@ function getPartOfSpeechAbbreviation(code) {
     return abbreviations[code] || 'др';
 }
 
+// Инициализация системы переводов
 function initializeMultipleTranslations() {
     const partOfSpeechSelect = document.getElementById('partOfSpeech');
     const partOfSpeechDisplay = document.getElementById('partOfSpeechDisplay');
@@ -97,7 +100,7 @@ function initializeMultipleTranslations() {
     translationsContainer.innerHTML = '';
     addInitialTranslationField();
 
-    // Обработчик изменения части речи - обновляем динамический бейдж
+    // Обработчик изменения части речи - пересчитываем кнопки
     partOfSpeechSelect.addEventListener('change', function() {
         updateDynamicBadge();
         updateTranslationAddButtons();
@@ -122,11 +125,41 @@ function initializeMultipleTranslations() {
     // Слушаем ввод в поля переводов
     translationsContainer.addEventListener('input', function(e) {
         if (e.target.classList.contains('translation-input')) {
-            updateTranslationAddButtons();
+            handleTranslationInput(e.target);
         }
     });
+
+    // Инициализируем отслеживание изменений
+    resetChangeTracking();
 }
 
+// Обработка ввода в поле перевода
+function handleTranslationInput(inputElement) {
+    const wrapper = inputElement.closest('.translation-input-wrapper');
+    const fieldIndex = Array.from(wrapper.parentNode.children).indexOf(wrapper);
+
+    // Очищаем предыдущий таймер для этого поля
+    if (changeTimers[fieldIndex]) {
+        clearTimeout(changeTimers[fieldIndex]);
+    }
+
+    // Устанавливаем таймер на 1 секунду
+    changeTimers[fieldIndex] = setTimeout(() => {
+        // Отмечаем поле как измененное
+        fieldChangedState[fieldIndex] = true;
+        console.log(`Поле ${fieldIndex} отмечено как измененное`);
+        updateTranslationAddButtons();
+    }, 1000);
+
+    updateTranslationAddButtons();
+}
+
+
+// Сброс отслеживания изменений
+function resetChangeTracking() {
+    fieldChangedState = {};
+    changeTimers = {};
+}
 
 function updateDynamicBadge() {
     const partOfSpeechSelect = document.getElementById('partOfSpeech');
@@ -147,6 +180,8 @@ function updateDynamicBadge() {
     }
 }
 
+
+// Добавление начального поля
 function addInitialTranslationField() {
     const translationsContainer = document.getElementById('translationsContainer');
 
@@ -159,14 +194,240 @@ function addInitialTranslationField() {
     input.placeholder = 'Введите перевод';
     input.autocomplete = 'off';
 
+    input.addEventListener('input', function() {
+        handleTranslationInput(this);
+    });
+
     wrapper.appendChild(input);
     translationsContainer.appendChild(wrapper);
 
-    // Обновляем состояние кнопок
+    // Инициализируем состояние для этого поля
+    fieldChangedState[0] = false;
+}
+
+
+// Основная логика отображения кнопок
+function updateTranslationAddButtons() {
+    const translationsContainer = document.getElementById('translationsContainer');
+    const partOfSpeechSelect = document.getElementById('partOfSpeech');
+    const wordInput = document.getElementById('newWord');
+    const currentPartOfSpeech = partOfSpeechSelect.value;
+    const hasWord = wordInput.value.trim() !== '';
+
+    console.log('updateTranslationAddButtons вызвана');
+    console.log('Часть речи:', currentPartOfSpeech, 'Есть слово:', hasWord);
+
+    // Проверяем количество полей
+    const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
+    const fieldsCount = fields.length;
+
+    console.log('Количество полей:', fieldsCount, 'Состояния изменений:', fieldChangedState);
+
+    // Удаляем все кнопки со всех полей
+    fields.forEach(field => {
+        const addBtn = field.querySelector('.add-translation-btn');
+        const removeBtn = field.querySelector('.remove-translation-btn');
+        if (addBtn) addBtn.remove();
+        if (removeBtn) removeBtn.remove();
+    });
+
+    // Для каждого поля применяем логику
+    fields.forEach((field, index) => {
+        // ПЕРВОЕ ПОЛЕ
+        if (index === 0) {
+            if (fieldsCount === 1) {
+                // Только одно поле - проверяем изменение части речи И текста
+                const partOfSpeechChanged = currentPartOfSpeech !== '';
+                const textChanged = fieldChangedState[0] || false;
+
+                console.log(`Первое поле: partOfSpeechChanged=${partOfSpeechChanged}, textChanged=${textChanged}, hasWord=${hasWord}`);
+
+                if (partOfSpeechChanged && textChanged && hasWord) {
+                    console.log('Показываем плюс на первом поле');
+                    addAddButton(field, index);
+                }
+                // Иначе ничего не показываем
+            }
+            // Если есть второе или третье поле - ничего не показываем
+            return;
+        }
+
+        // ВТОРОЕ ПОЛЕ
+        if (index === 1) {
+            if (fieldsCount === 2) {
+                // Два поля
+                const isChanged = fieldChangedState[1] || false;
+                console.log(`Второе поле (2 поля всего): isChanged=${isChanged}`);
+
+                if (isChanged) {
+                    addAddButton(field, index);
+                } else {
+                    addRemoveButton(field, index);
+                }
+            } else if (fieldsCount === 3) {
+                // Три поля - всегда минус
+                console.log('Второе поле (3 поля всего): показываем минус');
+                addRemoveButton(field, index);
+            }
+            return;
+        }
+
+        // ТРЕТЬЕ ПОЛЕ (индекс 2)
+        if (index === 2 && fieldsCount === 3) {
+            // Всегда минус
+            console.log('Третье поле: показываем минус');
+            addRemoveButton(field, index);
+        }
+    });
+}
+
+
+function addAddButton(field, index) {
+    // Проверяем, есть ли уже кнопка плюса
+    if (field.querySelector('.add-translation-btn')) return;
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'add-translation-btn';
+    addBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    addBtn.title = 'Добавить еще один перевод';
+
+    addBtn.addEventListener('click', function() {
+        addTranslationField();
+    });
+
+    field.appendChild(addBtn);
+    console.log(`Добавлена кнопка плюс на поле ${index}`);
+}
+
+// Создание нового поля перевода
+function createNewTranslationField(isThirdField, partOfSpeech) {
+    const translationsContainer = document.getElementById('translationsContainer');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'translation-input-wrapper';
+
+    if (isThirdField && partOfSpeech) {
+        // Третье поле сразу с динамическим бейджем
+        const badge = document.createElement('div');
+        badge.className = 'part-of-speech-badge dynamic';
+        badge.textContent = getPartOfSpeechAbbreviation(partOfSpeech);
+        badge.setAttribute('data-part-of-speech', partOfSpeech);
+        wrapper.appendChild(badge);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'translation-input';
+        input.placeholder = 'Введите перевод';
+        input.autocomplete = 'off';
+
+        input.addEventListener('input', function() {
+            handleTranslationInput(this);
+        });
+
+        wrapper.appendChild(input);
+
+        // Для третьего поля сразу добавляем минус
+        const fieldIndex = Array.from(translationsContainer.children).length;
+        addRemoveButton(wrapper, fieldIndex);
+    } else {
+        // Второе поле без бейджа
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'translation-input';
+        input.placeholder = 'Введите перевод';
+        input.autocomplete = 'off';
+
+        input.addEventListener('input', function() {
+            handleTranslationInput(this);
+        });
+
+        wrapper.appendChild(input);
+    }
+
+    translationsContainer.appendChild(wrapper);
+
+    // Инициализируем состояние для нового поля
+    const fieldIndex = Array.from(translationsContainer.children).length - 1;
+    fieldChangedState[fieldIndex] = false;
+    console.log(`Создано новое поле ${fieldIndex}, состояние изменений:`, fieldChangedState);
+}
+
+
+// Функция добавления кнопки минуса
+function addRemoveButton(field, index) {
+    // Проверяем, есть ли уже кнопка минуса
+    if (field.querySelector('.remove-translation-btn')) return;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-translation-btn';
+    removeBtn.innerHTML = '<i class="fas fa-minus"></i>';
+    removeBtn.title = 'Удалить перевод';
+
+    removeBtn.addEventListener('click', function() {
+        removeTranslationField(field, index);
+    });
+
+    field.appendChild(removeBtn);
+    console.log(`Добавлена кнопка минус на поле ${index}`);
+}
+
+// Удаление поля перевода
+function removeTranslationField(field, index) {
+    const translationsContainer = document.getElementById('translationsContainer');
+    const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
+
+    // Не удаляем если только одно поле
+    if (fields.length <= 1) return;
+
+    // Удаляем поле
+    field.remove();
+
+    // Обновляем состояние изменений после удаления
+    updateChangeStateAfterRemoval(index);
+
+    // Обновляем кнопки
     updateTranslationAddButtons();
 }
 
 
+// Обновление состояния изменений после удаления поля
+function updateChangeStateAfterRemoval(removedIndex) {
+    const translationsContainer = document.getElementById('translationsContainer');
+    const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
+
+    // Создаем новое состояние
+    const newState = {};
+
+    // Обрабатываем каждое оставшееся поле
+    fields.forEach((field, newIndex) => {
+        // Первое поле сохраняет свое состояние
+        if (newIndex === 0) {
+            newState[newIndex] = fieldChangedState[0] || false;
+        }
+        // Для всех остальных полей:
+        else {
+            // Если это поле было "затронуто" удалением (стало последним или изменило позицию)
+            // сбрасываем его состояние
+            newState[newIndex] = false;
+        }
+    });
+
+    fieldChangedState = newState;
+    console.log('Обновленное состояние изменений после удаления:', fieldChangedState);
+
+    // Очищаем все таймеры, кроме первого поля
+    Object.keys(changeTimers).forEach(key => {
+        const index = parseInt(key);
+        if (index > 0) { // Очищаем все таймеры кроме первого поля
+            clearTimeout(changeTimers[key]);
+            delete changeTimers[key];
+        }
+    });
+}
+
+// Добавление поля перевода (существующая функция, оставляем логику бейджей)
 function addTranslationField() {
     const translationsContainer = document.getElementById('translationsContainer');
     const partOfSpeechSelect = document.getElementById('partOfSpeech');
@@ -206,9 +467,6 @@ function addTranslationField() {
         badge.setAttribute('data-part-of-speech', currentPartOfSpeech);
         lastField.insertBefore(badge, lastField.firstChild);
 
-        // Добавляем кнопку минуса
-        addRemoveButton(lastField);
-
         // Создаем новое поле без бейджа
         createNewTranslationField(false, null);
     }
@@ -221,9 +479,6 @@ function addTranslationField() {
         badge.setAttribute('data-part-of-speech', currentPartOfSpeech);
         lastField.insertBefore(badge, lastField.firstChild);
 
-        // Добавляем кнопку минуса
-        addRemoveButton(lastField);
-
         // Создаем третье поле с динамическим бейджем
         createNewTranslationField(true, currentPartOfSpeech);
     }
@@ -231,197 +486,6 @@ function addTranslationField() {
     // Обновляем состояние кнопок
     updateTranslationAddButtons();
 }
-
-function createNewTranslationField(isThirdField, partOfSpeech) {
-    const translationsContainer = document.getElementById('translationsContainer');
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'translation-input-wrapper';
-
-    if (isThirdField && partOfSpeech) {
-        // Третье поле сразу с динамическим бейджем
-        const badge = document.createElement('div');
-        badge.className = 'part-of-speech-badge dynamic';
-        badge.textContent = getPartOfSpeechAbbreviation(partOfSpeech);
-        badge.setAttribute('data-part-of-speech', partOfSpeech);
-        wrapper.appendChild(badge);
-
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'translation-input';
-        input.placeholder = 'Введите перевод';
-        input.autocomplete = 'off';
-        wrapper.appendChild(input);
-
-        // Для третьего поля добавляем кнопку минуса
-        addRemoveButton(wrapper);
-    } else {
-        // Второе поле без бейджа
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'translation-input';
-        input.placeholder = 'Введите перевод';
-        input.autocomplete = 'off';
-        wrapper.appendChild(input);
-    }
-
-    translationsContainer.appendChild(wrapper);
-}
-
-function addRemoveButton(wrapper) {
-    // Проверяем, есть ли уже кнопка удаления
-    if (wrapper.querySelector('.remove-translation-btn')) return;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'remove-translation-btn';
-    removeBtn.innerHTML = '<i class="fas fa-minus"></i>';
-    removeBtn.title = 'Удалить перевод';
-
-    removeBtn.addEventListener('click', function() {
-        const translationsContainer = document.getElementById('translationsContainer');
-        const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
-        const wrapperToRemove = this.closest('.translation-input-wrapper');
-        const fieldIndex = Array.from(fields).indexOf(wrapperToRemove);
-
-        // Не удаляем если только одно поле
-        if (fields.length <= 1) return;
-
-        // Удаляем поле
-        wrapperToRemove.remove();
-
-        // После удаления получаем оставшиеся поля
-        const remainingFields = translationsContainer.querySelectorAll('.translation-input-wrapper');
-
-        // Если осталось только одно поле, нужно убрать с него бейдж и кнопку минуса
-        if (remainingFields.length === 1) {
-            const firstField = remainingFields[0];
-
-            // Удаляем бейдж
-            const badge = firstField.querySelector('.part-of-speech-badge');
-            if (badge) {
-                badge.remove();
-            }
-
-            // Удаляем кнопку минуса
-            const existingRemoveBtn = firstField.querySelector('.remove-translation-btn');
-            if (existingRemoveBtn) {
-                existingRemoveBtn.remove();
-            }
-        }
-        // Если осталось два поля (удалили третье поле)
-        else if (remainingFields.length === 2 && fields.length === 3) {
-            // У второго поля убираем бейдж и кнопку минуса
-            const secondField = remainingFields[1];
-
-            const badge = secondField.querySelector('.part-of-speech-badge');
-            if (badge) {
-                badge.remove();
-            }
-
-            const removeBtn = secondField.querySelector('.remove-translation-btn');
-            if (removeBtn) {
-                removeBtn.remove();
-            }
-        }
-        // Если удалили второе поле из трех полей
-        else if (remainingFields.length === 2 && fieldIndex === 1 && fields.length === 3) {
-            // Теперь есть первое поле (с бейджем и минусом) и бывшее третье поле
-            // Нужно у бывшего третьего поля убрать бейдж и минус
-            const secondField = remainingFields[1]; // бывшее третье
-
-            const badge = secondField.querySelector('.part-of-speech-badge');
-            if (badge) {
-                badge.remove();
-            }
-
-            const removeBtn = secondField.querySelector('.remove-translation-btn');
-            if (removeBtn) {
-                removeBtn.remove();
-            }
-        }
-
-        // Обновляем кнопки
-        updateTranslationAddButtons();
-    });
-
-    wrapper.appendChild(removeBtn);
-}
-
-
-function updateTranslationAddButtons() {
-    const translationsContainer = document.getElementById('translationsContainer');
-    const partOfSpeechSelect = document.getElementById('partOfSpeech');
-    const wordInput = document.getElementById('newWord');
-    const currentPartOfSpeech = partOfSpeechSelect.value;
-    const hasWord = wordInput.value.trim() !== '';
-
-    // Удаляем все существующие кнопки плюсика
-    const existingButtons = translationsContainer.querySelectorAll('.add-translation-btn');
-    existingButtons.forEach(btn => btn.remove());
-
-    // Проверяем количество полей
-    const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
-
-    // Можем добавлять, если есть слово, часть речи и меньше 3 полей
-    const canAddMore = fields.length < 3 && hasWord && currentPartOfSpeech;
-
-    // Показываем кнопку плюсика если можно добавить
-    if (canAddMore) {
-        // Добавляем кнопку плюсика только к последнему полю, если у него нет бейджа
-        const lastField = fields[fields.length - 1];
-        const hasBadge = lastField.querySelector('.part-of-speech-badge');
-
-        // Проверяем, нет ли уже кнопки плюсика
-        if (!hasBadge && !lastField.querySelector('.add-translation-btn')) {
-            const addBtn = document.createElement('button');
-            addBtn.type = 'button';
-            addBtn.className = 'add-translation-btn';
-            addBtn.innerHTML = '<i class="fas fa-plus"></i>';
-            addBtn.title = 'Добавить еще один перевод';
-
-            addBtn.addEventListener('click', function() {
-                addTranslationField();
-            });
-
-            lastField.appendChild(addBtn);
-        }
-    }
-
-    // Обновляем кнопки минуса
-    fields.forEach((field, index) => {
-        // Первое поле без минуса
-        if (index === 0) {
-            const removeBtn = field.querySelector('.remove-translation-btn');
-            if (removeBtn) removeBtn.remove();
-            return;
-        }
-
-        // Для второго и третьего полей
-        const input = field.querySelector('.translation-input');
-        const hasText = input && input.value.trim();
-        const isThirdField = fields.length === 3 && index === 2;
-
-        // Третье поле всегда с минусом
-        if (isThirdField) {
-            if (!field.querySelector('.remove-translation-btn')) {
-                addRemoveButton(field);
-            }
-        }
-        // Второе поле с минусом, только если есть три поля или если в нем есть текст
-        else if (fields.length === 3 || (fields.length === 2 && hasText)) {
-            if (!field.querySelector('.remove-translation-btn')) {
-                addRemoveButton(field);
-            }
-        }
-        // Иначе удаляем минус у второго поля
-        else if (fields.length === 2 && index === 1) {
-            const removeBtn = field.querySelector('.remove-translation-btn');
-            if (removeBtn) removeBtn.remove();
-        }
-    });
-}
-
 
 function getAllTranslations() {
     const translationInputs = document.querySelectorAll('.translation-input');
@@ -437,12 +501,22 @@ function getAllTranslations() {
     return translations;
 }
 
+// Очистка полей переводов
 function clearTranslationFields() {
     const translationsContainer = document.getElementById('translationsContainer');
     translationsContainer.innerHTML = '';
     addInitialTranslationField(); // Добавляем начальное поле
+
+    // Очищаем таймеры
+    Object.values(changeTimers).forEach(timer => {
+        if (timer) clearTimeout(timer);
+    });
+    changeTimers = {};
+    resetChangeTracking();
 }
 
+
+// Заполнение полей переводов при редактировании (существующая функция)
 function populateTranslationFields(translations, partOfSpeech) {
     clearTranslationFields();
 
@@ -456,6 +530,9 @@ function populateTranslationFields(translations, partOfSpeech) {
     // Удаляем начальное поле
     const translationsContainer = document.getElementById('translationsContainer');
     translationsContainer.innerHTML = '';
+
+    // Сбрасываем отслеживание изменений
+    resetChangeTracking();
 
     // Создаем поля для каждого перевода (максимум 3)
     const maxFields = Math.min(translations.length, 3);
@@ -480,9 +557,18 @@ function populateTranslationFields(translations, partOfSpeech) {
         input.value = translations[i];
         input.autocomplete = 'off';
 
+        input.addEventListener('input', function() {
+            handleTranslationInput(this);
+        });
+
         wrapper.appendChild(input);
         translationsContainer.appendChild(wrapper);
+
+        // Инициализируем состояние для этого поля (предполагаем, что эти значения не изменены)
+        fieldChangedState[i] = false;
     }
+
+    console.log('Поля заполнены, состояния изменений:', fieldChangedState);
 
     // Обновляем кнопки
     updateTranslationAddButtons();

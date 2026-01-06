@@ -886,7 +886,7 @@ textarea {
 
 .word-card {
     position: relative;
-    background: white; /* Белый фон карточки */
+    background: white;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.08);
     border: 1px solid #f0e6d2;
@@ -913,7 +913,6 @@ textarea {
 .word-main {
     text-align: center;
     padding-bottom: 20px;
-    /* Убраны все разделители */
 }
 
 .word-text {
@@ -933,7 +932,6 @@ textarea {
     color: #5a5a5a;
     font-weight: 600;
     margin-bottom: 8px;
-    /* Убраны разделители */
 }
 
 .word-pos {
@@ -941,7 +939,6 @@ textarea {
     color: #888;
     font-style: italic;
     margin-bottom: 10px;
-    /* Убраны разделители */
 }
 
 .word-context {
@@ -1069,14 +1066,12 @@ textarea {
     justify-content: center;
     width: 50px;
     height: 50px;
-    /* Убраны фон и тень - иконка не выделяется */
 }
 
 .public-word-indicator:hover {
     opacity: 1;
     color: #1b5e20;
     transform: scale(1.1) rotate(10deg);
-    /* Убрана тень при наведении */
 }
 
 .public-word-indicator i {
@@ -1092,6 +1087,22 @@ textarea {
 .word-card.fade-in {
     opacity: 1;
     transform: translateX(0);
+}
+
+/* ===== ПРИОРИТЕТ МИНУСА НАД ПЛЮСОМ ===== */
+.translation-input-wrapper:has(.remove-translation-btn) .add-translation-btn {
+    display: none !important;
+}
+
+/* Улучшение видимости минуса */
+.remove-translation-btn {
+    background: #ffebee !important;
+    opacity: 1 !important;
+}
+
+.remove-translation-btn:hover {
+    background: #ffcdd2 !important;
+    transform: translateY(-50%) scale(1.1) !important;
 }
 
 /* ===== МОБИЛЬНЫЕ СТИЛИ ===== */
@@ -1157,7 +1168,6 @@ textarea {
         overflow-y: auto;
     }
 
-    /* Исправление позиционирования заголовка поиска на мобильных */
     .search-header-result {
         position: relative;
         top: 0;
@@ -1180,12 +1190,10 @@ textarea {
         text-overflow: ellipsis;
     }
 
-    /* Убираем column направление для мобильных */
     .search-header-result {
         flex-direction: row !important;
     }
 
-    /* Убираем выравнивание для стрелки на мобильных */
     .refresh-btn {
         align-self: center !important;
     }
@@ -1219,7 +1227,6 @@ textarea {
         font-size: 1.2rem;
     }
 
-    /* Карточки на мобильных */
     .word-card {
         margin: 10px;
         padding: 20px;
@@ -1249,7 +1256,6 @@ textarea {
         height: 44px;
     }
 
-    /* Стили для поиска на мобильных */
     .search-header-result {
         flex-direction: row;
         gap: 10px;
@@ -1271,7 +1277,6 @@ textarea {
         gap: 5px;
     }
 
-    /* Стили для карточек других пользователей на мобильных */
     .other-word-second-line {
         flex-direction: row;
         align-items: center;
@@ -1285,7 +1290,6 @@ textarea {
         gap: 6px;
     }
 
-    /* Убедимся, что текст не переносится на маленьких экранах */
     .other-word-text-container {
         flex-wrap: nowrap;
         overflow: hidden;
@@ -1298,7 +1302,6 @@ textarea {
         text-overflow: ellipsis;
     }
 
-    /* Мобильные стили для множественных переводов */
     .translation-input-wrapper:has(.part-of-speech-badge) .translation-input {
         padding-left: 55px;
     }
@@ -1323,7 +1326,6 @@ textarea {
         padding-right: 40px;
     }
 
-    /* Мобильные стили для кнопок управления словом */
     .word-actions {
         max-width: 180px;
         gap: 8px;
