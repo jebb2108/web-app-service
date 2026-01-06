@@ -1116,8 +1116,8 @@ textarea {
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
 .word-card-menu {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 25px;
+    left: 25px;
     z-index: 100;
 }
 
@@ -1129,18 +1129,17 @@ textarea {
     border: none;
     color: #B8A68B;
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.4rem;
     z-index: 101;
     position: relative;
+    transition: color 0.3s ease;
 }
 
 .menu-trigger:hover {
     color: #9C8B70;
-    transform: scale(1.1);
 }
 
 .menu-trigger.active {
@@ -1514,8 +1513,8 @@ textarea {
 
     /* Мобильные стили для меню карточки */
     .word-card-menu {
-        top: 15px;
-        left: 15px;
+        top: 20px;
+        left: 20px;
     }
 
     .menu-trigger {

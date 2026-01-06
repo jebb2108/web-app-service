@@ -620,69 +620,73 @@ function initializeCardMenu() {
     const wordCard = document.getElementById('wordCard');
     if (!wordCard) return;
 
-    // Обработчик клика на триггер меню
-    wordCard.addEventListener('click', function(e) {
-        const menuTrigger = e.target.closest('.menu-trigger');
-        if (menuTrigger) {
-            const menuButtons = wordCard.querySelector('.menu-buttons');
-            const isActive = !menuTrigger.classList.contains('active');
+    // Находим элементы меню
+    const menuTrigger = wordCard.querySelector('.menu-trigger');
+    const menuButtons = wordCard.querySelector('.menu-buttons');
 
-            // Убираем активность у всех элементов меню
-            if (!isActive) {
-                menuTrigger.classList.remove('active');
-                menuButtons.classList.remove('active');
-                const icon = menuTrigger.querySelector('i');
-                icon.className = 'fas fa-plus';
-            } else {
-                menuTrigger.classList.add('active');
-                menuButtons.classList.add('active');
-                const icon = menuTrigger.querySelector('i');
-                icon.className = 'fas fa-times';
-            }
+    // Простой переключатель
+    menuTrigger.addEventListener('click', function(e) {
+        e.stopPropagation(); // Останавливаем всплытие
 
-            // Предотвращаем дальнейшую обработку события
-            e.stopPropagation();
+        const isActive = this.classList.contains('active');
+
+        if (isActive) {
+            // Закрываем меню
+            this.classList.remove('active');
+            menuButtons.classList.remove('active');
+            this.innerHTML = '<i class="fas fa-plus"></i>'; // Возвращаем плюс
+        } else {
+            // Открываем меню
+            this.classList.add('active');
+            menuButtons.classList.add('active');
+            this.innerHTML = '<i class="fas fa-times"></i>'; // Меняем на крестик
         }
+    });
 
-        // Обработчик для кнопки редактирования в меню
+    // Обработчики для кнопок меню (оставляем как было)
+    wordCard.addEventListener('click', function(e) {
         const editBtn = e.target.closest('.edit-menu-btn');
         if (editBtn) {
             const wordId = editBtn.getAttribute('data-word-id');
-            if (wordId) {
-                enterEditMode(wordId);
-            }
+            if (wordId) enterEditMode(wordId);
+            return;
         }
 
-        // Обработчик для кнопки удаления в меню
         const deleteBtn = e.target.closest('.delete-menu-btn');
         if (deleteBtn) {
             const wordId = deleteBtn.getAttribute('data-word-id');
-            if (wordId) {
-                deleteWord(wordId);
-            }
+            if (wordId) deleteWord(wordId);
+            return;
         }
 
-        // Обработчик для AI кнопки (заглушка)
         const aiBtn = e.target.closest('.ai-menu-btn');
         if (aiBtn) {
             showNotification('AI функция находится в разработке', 'success');
+            return;
         }
     });
 
     // Закрытие меню при клике вне карточки
     document.addEventListener('click', function(e) {
         if (!wordCard.contains(e.target)) {
-            const menuTrigger = wordCard.querySelector('.menu-trigger');
-            const menuButtons = wordCard.querySelector('.menu-buttons');
-
-            if (menuTrigger && menuTrigger.classList.contains('active')) {
-                menuTrigger.classList.remove('active');
-                menuButtons.classList.remove('active');
-                const icon = menuTrigger.querySelector('i');
-                icon.className = 'fas fa-plus';
-            }
+            closeCardMenu();
         }
     });
+}
+
+// Упрощаем функцию closeCardMenu
+function closeCardMenu() {
+    const wordCard = document.getElementById('wordCard');
+    if (!wordCard) return;
+
+    const menuTrigger = wordCard.querySelector('.menu-trigger');
+    const menuButtons = wordCard.querySelector('.menu-buttons');
+
+    if (menuTrigger && menuButtons) {
+        menuTrigger.classList.remove('active');
+        menuButtons.classList.remove('active');
+        menuTrigger.innerHTML = '<i class="fas fa-plus"></i>';
+    }
 }
 
 // Функция для закрытия меню
