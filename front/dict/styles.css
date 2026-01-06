@@ -1114,6 +1114,8 @@ textarea {
 }
 
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
+
+
 .word-card-menu {
     position: absolute;
     top: 25px;
@@ -1127,30 +1129,56 @@ textarea {
     border-radius: 50%;
     background: transparent;
     border: none;
-    color: #B8A68B;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
     z-index: 101;
     position: relative;
-    transition: color 0.3s ease;
 }
 
-.menu-trigger:hover {
+.menu-icon {
+    color: #B8A68B;
+    font-size: 1.4rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Эффект "мерцания" для звездочки */
+.menu-trigger:hover .menu-icon {
     color: #9C8B70;
+    animation: star-twinkle 1.5s infinite alternate;
 }
 
-.menu-trigger.active {
+@keyframes star-twinkle {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.1) rotate(10deg);
+        opacity: 1;
+    }
+}
+
+/* Анимация превращения звездочки в крестик */
+.menu-trigger.active .menu-icon {
     color: #c62828;
-    transform: rotate(45deg) !important;
-    background: transparent;
+    transform: rotate(135deg) scale(1.2); /* Поворот и увеличение */
+    animation: none; /* Отключаем мерцание при активном состоянии */
 }
 
-.menu-trigger.active:hover {
+.menu-trigger.active:hover .menu-icon {
     color: #d32f2f;
+    transform: rotate(135deg) scale(1.3);
 }
+
+
+/* ===== КНОПКИ МЕНЮ ===== */
 
 .menu-buttons {
     position: absolute;
@@ -1158,13 +1186,15 @@ textarea {
     left: 0;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transform: scale(0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
 }
 
 .menu-buttons.active {
     opacity: 1;
     visibility: visible;
+    transform: scale(1);
     pointer-events: all;
 }
 
@@ -1182,12 +1212,12 @@ textarea {
     justify-content: center;
     font-size: 1.2rem;
     position: absolute;
-    transform: scale(0.8);
+    transform: scale(0) rotate(-180deg);
     opacity: 0;
 }
 
 .menu-buttons.active .menu-btn {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     opacity: 1;
 }
 
@@ -1195,34 +1225,24 @@ textarea {
 .menu-btn.edit-menu-btn {
     top: 0;
     left: -50px;
+    transition-delay: 0.1s;
 }
 
 .menu-btn.delete-menu-btn {
     top: -50px;
     left: 0;
+    transition-delay: 0.2s;
 }
 
 .menu-btn.ai-menu-btn {
     top: -50px;
     left: -50px;
+    transition-delay: 0.3s;
 }
 
 .menu-btn:hover {
     color: #9C8B70;
-    transform: scale(1.1) !important;
-}
-
-/* Анимации появления кнопок */
-.menu-buttons.active .edit-menu-btn {
-    transition: all 0.3s ease 0.1s;
-}
-
-.menu-buttons.active .delete-menu-btn {
-    transition: all 0.3s ease 0.2s;
-}
-
-.menu-buttons.active .ai-menu-btn {
-    transition: all 0.3s ease 0.3s;
+    transform: scale(1.15) !important;
 }
 
 /* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА ===== */
@@ -1511,15 +1531,12 @@ textarea {
         padding: 8px 16px;
     }
 
-    /* Мобильные стили для меню карточки */
     .word-card-menu {
-        top: 20px;
+        top: 15px;
         left: 20px;
     }
 
-    .menu-trigger {
-        width: 28px;
-        height: 28px;
+    .menu-icon {
         font-size: 1.2rem;
     }
 
@@ -1540,6 +1557,23 @@ textarea {
     .menu-btn.ai-menu-btn {
         top: -40px;
         left: -40px;
+    }
+
+    .public-word-indicator {
+        top: 15px;
+        right: 15px;
+        font-size: 1.4rem;
+        width: 44px;
+        height: 44px;
+    }
+
+    @keyframes star-twinkle {
+        0% {
+            transform: scale(1) rotate(0deg);
+        }
+        100% {
+            transform: scale(1.05) rotate(5deg);
+        }
     }
 
     /* Мобильные стили для отображения нескольких переводов */

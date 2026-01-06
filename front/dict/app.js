@@ -624,43 +624,57 @@ function initializeCardMenu() {
     const menuIcon = wordCard.querySelector('.menu-icon');
     const menuButtons = wordCard.querySelector('.menu-buttons');
 
-    // Простой переключатель
+    // Простой переключатель меню
     menuTrigger.addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
 
-        const isActive = this.classList.toggle('active');
+        const isActive = !this.classList.contains('active');
 
         if (isActive) {
-            // Меняем иконку на крестик
-            menuIcon.className = 'menu-icon fas fa-times';
+            // Открываем меню: звездочка превращается в крестик
+            this.classList.add('active');
+            menuIcon.className = 'menu-icon fas fa-times'; // Меняем на крестик
             menuButtons.classList.add('active');
         } else {
-            // Возвращаем плюс
-            menuIcon.className = 'menu-icon fas fa-plus';
+            // Закрываем меню: крестик превращается в звездочку
+            this.classList.remove('active');
+            menuIcon.className = 'menu-icon fas fa-asterisk'; // Возвращаем звездочку
             menuButtons.classList.remove('active');
         }
     });
 
-    // Обработчики для кнопок меню (оставляем как было)
+    // Обработчики для кнопок меню
     wordCard.addEventListener('click', function(e) {
+        // Обработчик для кнопки редактирования
         const editBtn = e.target.closest('.edit-menu-btn');
         if (editBtn) {
             const wordId = editBtn.getAttribute('data-word-id');
-            if (wordId) enterEditMode(wordId);
+            if (wordId) {
+                closeCardMenu();
+                setTimeout(() => enterEditMode(wordId), 150);
+            }
             return;
         }
 
+        // Обработчик для кнопки удаления
         const deleteBtn = e.target.closest('.delete-menu-btn');
         if (deleteBtn) {
             const wordId = deleteBtn.getAttribute('data-word-id');
-            if (wordId) deleteWord(wordId);
+            if (wordId) {
+                closeCardMenu();
+                setTimeout(() => deleteWord(wordId), 150);
+            }
             return;
         }
 
+        // Обработчик для AI кнопки (заглушка)
         const aiBtn = e.target.closest('.ai-menu-btn');
         if (aiBtn) {
-            showNotification('AI функция находится в разработке', 'success');
+            closeCardMenu();
+            setTimeout(() => {
+                showNotification('AI функция находится в разработке', 'success');
+            }, 150);
             return;
         }
     });
@@ -673,6 +687,7 @@ function initializeCardMenu() {
     });
 }
 
+// Функция для закрытия меню
 function closeCardMenu() {
     const wordCard = document.getElementById('wordCard');
     if (!wordCard) return;
@@ -683,7 +698,7 @@ function closeCardMenu() {
 
     if (menuTrigger && menuTrigger.classList.contains('active')) {
         menuTrigger.classList.remove('active');
-        menuIcon.className = 'menu-icon fas fa-plus';
+        menuIcon.className = 'menu-icon fas fa-asterisk'; // Всегда возвращаем звездочку
         menuButtons.classList.remove('active');
     }
 }
