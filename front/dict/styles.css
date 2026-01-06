@@ -896,6 +896,8 @@ textarea {
     padding: 30px;
     transition: all 0.3s ease;
     margin-bottom: 15px;
+    z-index: 1;
+    overflow: visible;
 }
 
 .word-card:hover {
@@ -908,6 +910,8 @@ textarea {
     flex-direction: column;
     gap: 20px;
     height: 100%;
+    position: relative;
+    z-index: 2;
 }
 
 .word-main {
@@ -1114,9 +1118,6 @@ textarea {
 }
 
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
-
-
-/* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
 .word-card-menu {
     position: absolute;
     top: 15px;
@@ -1160,10 +1161,10 @@ textarea {
     color: #d32f2f;
 }
 
-/* ===== КНИЖНЫЕ ЗАКЛАДКИ НАД КАРТОЧКОЙ ===== */
+/* ===== КНИЖНЫЕ ЗАКЛАДКИ НАД КАРТОЧКОЙ - ИСПРАВЛЕННЫЕ СТИЛИ ===== */
 .menu-bookmarks {
     position: absolute;
-    top: -35px; /* Опускаем закладки ниже, чтобы они частично скрывались под карточкой */
+    top: -55px; /* Подняли закладки выше */
     left: -20px; /* Сдвигаем все закладки влево */
     display: flex;
     gap: 0; /* Убираем промежутки между закладками */
@@ -1272,37 +1273,67 @@ textarea {
     transition: all 0.3s ease 0.3s;
 }
 
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ ЗАКЛАДОК ===== */
+@media (max-width: 768px) {
+    .word-card-menu {
+        top: 15px;
+        left: 15px;
+    }
 
-/* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА ===== */
-.public-word-indicator {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    color: #2e7d32;
-    font-size: 1.6rem;
-    opacity: 0.9;
-    z-index: 10;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-}
+    .menu-icon {
+        font-size: 1.1rem;
+    }
 
-.public-word-indicator i {
-    margin: 0;
-}
+    .menu-bookmarks {
+        top: -50px;
+        left: -15px; /* Меньший сдвиг для мобильных */
+    }
 
-/* ===== АНИМАЦИИ ===== */
-.word-card.fade-out {
-    opacity: 0;
-    transform: translateX(20px);
-}
+    .bookmark-btn {
+        min-width: 55px;
+        height: 40px;
+        padding: 8px 15px;
+        margin-right: -2px;
+    }
 
-.word-card.fade-in {
-    opacity: 1;
-    transform: translateX(0);
+    .bookmark-btn i {
+        font-size: 1.1rem;
+    }
+
+    .bookmark-btn::after {
+        bottom: -12px;
+        height: 12px;
+    }
+
+    .bookmark-btn:hover::after {
+        height: 14px;
+        bottom: -14px;
+    }
+
+    /* Обеспечиваем такое же отображение на мобильном */
+    .menu-bookmarks {
+        justify-content: flex-start;
+        width: auto;
+        max-width: none;
+        overflow: visible;
+    }
+
+    .word-card {
+        position: relative;
+        overflow: visible;
+    }
+
+    /* Защита от выхода за левый край на очень маленьких экранах */
+    @media (max-width: 400px) {
+        .menu-bookmarks {
+            left: -10px;
+        }
+
+        .bookmark-btn {
+            min-width: 50px;
+            padding: 8px 12px;
+        }
+    }
 }
 
 /* ===== ПРИОРИТЕТ МИНУСА НАД ПЛЮСОМ ===== */
@@ -1443,39 +1474,12 @@ textarea {
         font-size: 1.2rem;
     }
 
-    /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ КАРТОЧКИ ===== */
     .word-card {
-        position: relative;
-        overflow: visible; /* Разрешаем выход элементов за пределы карточки */
-        z-index: 1; /* Устанавливаем базовый z-index для карточки */
-    }
-
-    .word-card-menu {
-        position: absolute;
-        top: 15px;
-        left: 25px;
-        z-index: 100;
-    }
-
-    /* Создаем эффект, что закладки выходят из-под карточки */
-    .word-card::before {
-        content: '';
-        position: absolute;
-        top: -20px;
-        left: 0;
-        right: 0;
-        height: 20px;
-        background: #fff;
-        z-index: 5; /* Ниже закладок, но выше карточки */
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    }
-
-    /* Чтобы контент карточки не перекрывал закладки */
-    .word-card-content {
-        position: relative;
-        z-index: 2;
+        margin: 10px;
+        padding: 20px;
+        min-height: 300px;
+        margin-bottom: 15px;
+        order: 1;
     }
 
     .word-text {
@@ -1580,68 +1584,27 @@ textarea {
     }
 
     .menu-icon {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .menu-bookmarks {
-        top: -30px;
-        left: -15px; /* Меньший сдвиг для мобильных */
+        top: -50px;
+        gap: 0;
+        justify-content: flex-start;
+        padding-left: 0;
+        overflow-x: auto;
+        max-width: 100%;
     }
 
     .bookmark-btn {
-        min-width: 55px;
-        height: 40px;
-        padding: 8px 15px;
-        margin-right: -2px;
+        min-width: 45px;
+        height: 35px;
+        padding: 6px 10px;
+        flex-shrink: 0;
     }
 
     .bookmark-btn i {
-        font-size: 1.1rem;
-    }
-
-    .bookmark-btn::after {
-        bottom: -12px;
-        height: 12px;
-    }
-
-    .bookmark-btn:hover::after {
-        height: 14px;
-        bottom: -14px;
-    }
-
-    /* Обеспечиваем такое же отображение на мобильном */
-    .menu-bookmarks {
-        justify-content: flex-start;
-        width: auto;
-        max-width: none;
-        overflow: visible;
-    }
-
-    .word-card {
-        position: relative;
-        overflow: visible;
-    }
-
-    /* Защита от выхода за левый край на очень маленьких экранах */
-    @media (max-width: 400px) {
-        .menu-bookmarks {
-            left: -10px;
-        }
-
-        .bookmark-btn {
-            min-width: 50px;
-            padding: 8px 12px;
-        }
-    }
-
-    /* Защита от выхода за левый край */
-    .word-card-menu {
-        left: max(15px, 5%);
-    }
-
-    .menu-bookmarks {
-        left: 0;
-        right: auto;
+        font-size: 0.9rem;
     }
 
     .public-word-indicator {
