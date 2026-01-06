@@ -918,7 +918,6 @@ async function addWord() {
         user_id: currentUserId,
         word: word.toLowerCase(),
         translations: translationDict,
-        part_of_speech: partOfSpeechDict,
         is_public: isPublic,
         context: context
     };
