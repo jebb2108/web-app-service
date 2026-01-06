@@ -1,20 +1,20 @@
-from typing import Union, Optional
+from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field
 
 
 class Word(BaseModel):
+    """
+    Модель слова пользователя (для базы данных)
+    """
     user_id: int = Field(..., description="Уникальный идентификатор пользователя")
-    word: Union[str, None] = Field(None, description="Слово, которое нужно добавить в словарь")
-    part_of_speech: Union[str, None] = Field(None, description="Часть речи слова")
-    translation: Union[str, None] = Field(None, description="Перевод слова")
+    word: Optional[str] = Field(None, description="Слово, которое нужно добавить в словарь")
+    translation: Optional[Dict[int, Any]] = Field(None, description="Перевод слова")
+    part_of_speech: Optional[Dict[int, Any]] = Field(None, description="Часть речи слова")
     is_public: bool = Field(False, description="Видно ли слово остальным пользователям")
     context: Optional[str] = Field(None, description="Контекст к слову")
     audio: Optional[bytes] = Field(None, description="bytes of audio recording")
 
-    source: Optional[str] = Field(
-        default="api", description="Источник запроса (api, tg-bot-service, etc)"
-    )
 
 class Profile(BaseModel):
     """

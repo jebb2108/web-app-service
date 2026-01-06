@@ -487,20 +487,6 @@ function addTranslationField() {
     updateTranslationAddButtons();
 }
 
-function getAllTranslations() {
-    const translationInputs = document.querySelectorAll('.translation-input');
-    const translations = [];
-
-    translationInputs.forEach(input => {
-        const value = input.value.trim();
-        if (value) {
-            translations.push(value);
-        }
-    });
-
-    return translations;
-}
-
 // Очистка полей переводов
 function clearTranslationFields() {
     const translationsContainer = document.getElementById('translationsContainer');
@@ -864,7 +850,17 @@ async function addWord() {
     const partOfSpeech = partOfSpeechSelect.value;
     const context = contextInput ? contextInput.value.trim() : '';
     const isPublic = isPublicToggle ? isPublicToggle.checked : false;
-    const translations = getAllTranslations();
+
+    // Получаем все переводы из полей ввода
+    const translationInputs = document.querySelectorAll('.translation-input');
+    const translations = [];
+
+    translationInputs.forEach(input => {
+        const value = input.value.trim();
+        if (value) {
+            translations.push(value);
+        }
+    });
 
     if (!word) {
         showNotification('Пожалуйста, введите слово', 'error');
@@ -886,11 +882,42 @@ async function addWord() {
         return;
     }
 
+    // Создаем словари в формате, ожидаемом бэкендом
+    const translationDict = {};
+    const partOfSpeechDict = {};
+
+    // Получаем информацию о частях речи для каждого перевода
+    const translationsContainer = document.getElementById('translationsContainer');
+    const translationWrappers = translationsContainer.querySelectorAll('.translation-input-wrapper');
+
+    // Заполняем словари индексами 0, 1, 2
+    for (let i = 0; i < 3; i++) {
+        translationDict[i] = translations[i] || null;
+
+        // Если есть перевод для этого индекса, получаем его часть речи из бейджа
+        if (translations[i] && i < translationWrappers.length) {
+            const wrapper = translationWrappers[i];
+            const badge = wrapper.querySelector('.part-of-speech-badge');
+
+            if (badge) {
+                // Получаем часть речи из data-атрибута бейджа (должно быть на английском)
+                const badgePartOfSpeech = badge.getAttribute('data-part-of-speech');
+                partOfSpeechDict[i] = badgePartOfSpeech || partOfSpeech;
+            } else {
+                // Если нет бейджа, используем общую часть речи (уже на английском)
+                partOfSpeechDict[i] = partOfSpeech;
+            }
+        } else {
+            partOfSpeechDict[i] = null;
+        }
+    }
+
+
     const payload = {
         user_id: currentUserId,
         word: word.toLowerCase(),
-        part_of_speech: partOfSpeech,
-        translation: translations,
+        translation: translationDict,
+        part_of_speech: partOfSpeechDict,
         is_public: isPublic,
         context: context
     };
@@ -981,7 +1008,6 @@ async function addWord() {
         if (loadingOverlay) loadingOverlay.style.display = 'none';
     }
 }
-
 // --- Edit word functionality ---
 function enterEditMode(wordId) {
     const word = currentWords.find(w => w.id === wordId);
