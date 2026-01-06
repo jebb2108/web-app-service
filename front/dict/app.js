@@ -615,19 +615,93 @@ async function loadWords() {
     }
 }
 
+// Добавьте эту функцию для инициализации меню карточки
+function initializeCardMenu() {
+    const wordCard = document.getElementById('wordCard');
+    if (!wordCard) return;
+
+    // Обработчик клика на триггер меню
+    wordCard.addEventListener('click', function(e) {
+        const menuTrigger = e.target.closest('.menu-trigger');
+        if (menuTrigger) {
+            const menuButtons = wordCard.querySelector('.menu-buttons');
+            menuTrigger.classList.toggle('active');
+            menuButtons.classList.toggle('active');
+
+            // Меняем иконку
+            const icon = menuTrigger.querySelector('i');
+            if (menuTrigger.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-ellipsis-h';
+            }
+        }
+
+        // Обработчик для кнопки редактирования в меню
+        const editBtn = e.target.closest('.edit-menu-btn');
+        if (editBtn) {
+            const wordId = editBtn.getAttribute('data-word-id');
+            if (wordId) {
+                closeCardMenu();
+                enterEditMode(wordId);
+            }
+        }
+
+        // Обработчик для кнопки удаления в меню
+        const deleteBtn = e.target.closest('.delete-menu-btn');
+        if (deleteBtn) {
+            const wordId = deleteBtn.getAttribute('data-word-id');
+            if (wordId) {
+                closeCardMenu();
+                deleteWord(wordId);
+            }
+        }
+
+        // Обработчик для AI кнопки (заглушка)
+        const aiBtn = e.target.closest('.ai-menu-btn');
+        if (aiBtn) {
+            closeCardMenu();
+            showNotification('AI функция находится в разработке', 'success');
+        }
+    });
+
+    // Закрытие меню при клике вне карточки
+    document.addEventListener('click', function(e) {
+        if (!wordCard.contains(e.target)) {
+            closeCardMenu();
+        }
+    });
+}
+
+// Функция для закрытия меню
+function closeCardMenu() {
+    const wordCard = document.getElementById('wordCard');
+    if (!wordCard) return;
+
+    const menuTrigger = wordCard.querySelector('.menu-trigger');
+    const menuButtons = wordCard.querySelector('.menu-buttons');
+
+    if (menuTrigger && menuTrigger.classList.contains('active')) {
+        menuTrigger.classList.remove('active');
+        menuButtons.classList.remove('active');
+        const icon = menuTrigger.querySelector('i');
+        icon.className = 'fas fa-ellipsis-h';
+    }
+}
+
 // --- Display current card ---
 function displayCurrentCard() {
     const wordCard = document.getElementById('wordCard');
     const emptyState = document.getElementById('emptyState');
     const cardCounter = document.getElementById('cardCounter');
-    const wordActions = document.getElementById('wordActions');
+    // const wordActions = document.getElementById('wordActions'); // Убираем
 
     console.log('Display current card, words count:', currentWords.length);
     console.log('Current word is_public:', currentWords[currentCardIndex]?.is_public);
 
     if (currentWords.length === 0) {
         if (wordCard) wordCard.style.display = 'none';
-        if (wordActions) wordActions.style.display = 'none';
+        // if (wordActions) wordActions.style.display = 'none'; // Убираем
         if (emptyState) emptyState.style.display = 'block';
         return;
     }
@@ -655,15 +729,17 @@ function displayCurrentCard() {
     if (cardTranslationElement) cardTranslationElement.textContent = translationText;
     if (cardPosElement) cardPosElement.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
 
-    // Устанавливаем ID слова для кнопок управления и показываем их
-    if (wordActions && currentWord.id) {
-        const editBtn = document.getElementById('editCardBtn');
-        const deleteBtn = document.getElementById('deleteCardBtn');
+    // Устанавливаем data-word-id для кнопок меню
+    const menuEditBtn = wordCard.querySelector('.edit-menu-btn');
+    const menuDeleteBtn = wordCard.querySelector('.delete-menu-btn');
+    const menuAiBtn = wordCard.querySelector('.ai-menu-btn');
 
-        if (editBtn) editBtn.setAttribute('data-word-id', currentWord.id);
-        if (deleteBtn) deleteBtn.setAttribute('data-word-id', currentWord.id);
-        wordActions.style.display = 'flex';
-    }
+    if (menuEditBtn) menuEditBtn.setAttribute('data-word-id', currentWord.id);
+    if (menuDeleteBtn) menuDeleteBtn.setAttribute('data-word-id', currentWord.id);
+    if (menuAiBtn) menuAiBtn.setAttribute('data-word-id', currentWord.id);
+
+    // Закрываем меню при смене карточки
+    closeCardMenu();
 
     // Контекст
     const contextContainer = document.getElementById('cardContextContainer');
@@ -1706,10 +1782,16 @@ async function initializeApp() {
             });
         }
 
+
         setupBookmarks();
 
         // Обработчики для добавления слова в словарь
         document.getElementById('addWordBtn')?.addEventListener('click', addWord);
+
+        // Слушаем ввод слова для обновления состояния кнопки плюсика
+        document.getElementById('newWord')?.addEventListener('input', function() {
+            updateTranslationAddButtons();
+        });
 
         // Обработчики для навигации по карточкам
         document.getElementById('nextWordBtn')?.addEventListener('click', nextWord);
@@ -1719,26 +1801,7 @@ async function initializeApp() {
         document.getElementById('searchBtn')?.addEventListener('click', findTranslation);
         document.getElementById('refreshSearch')?.addEventListener('click', resetSearchView);
 
-        // Обработчик для кнопки удаления на карточке
-        document.getElementById('deleteCardBtn')?.addEventListener('click', function() {
-            const wordId = this.getAttribute('data-word-id');
-            if (wordId) {
-                deleteWord(wordId);
-            }
-        });
-
-        // Обработчик для кнопки редактирования на карточке
-        document.getElementById('editCardBtn')?.addEventListener('click', function() {
-            const wordId = this.getAttribute('data-word-id');
-            if (wordId) {
-                enterEditMode(wordId);
-            }
-        });
-
-        // Слушаем ввод слова для обновления состояния кнопки плюсика
-        document.getElementById('newWord')?.addEventListener('input', function() {
-            updateTranslationAddButtons();
-        });
+        initializeCardMenu();
     }
 
     function resetSearchView() {

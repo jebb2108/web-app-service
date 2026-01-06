@@ -111,6 +111,24 @@
                     <div class="loading-overlay" id="wordsLoading"><div class="spinner"></div></div>
 
                     <div class="word-card" id="wordCard" style="display: none;">
+                        <!-- Меню карточки в левом верхнем углу -->
+                        <div class="word-card-menu">
+                            <button class="menu-trigger">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                            <div class="menu-buttons">
+                                <button class="menu-btn edit-menu-btn" data-word-id="">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="menu-btn delete-menu-btn" data-word-id="">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="menu-btn ai-menu-btn" data-word-id="">
+                                    <i class="fas fa-robot"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="word-card-content">
                             <div class="word-main">
                                 <h3 class="word-text" id="cardWord"></h3>
@@ -140,17 +158,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Кнопки управления словом под карточкой -->
-                    <div class="word-actions" id="wordActions" style="display: none;">
-                        <button class="edit-word-btn" id="editCardBtn">
-                           <i class="fas fa-edit"></i> Редактировать
-                        </button>
-                        <button class="delete-word-btn" id="deleteCardBtn">
-                           <i class="fas fa-trash"></i> Удалить из словаря
-                        </button>
-                    </div>
-        
                     <div class="empty-state" id="emptyState" style="display: none;">
                         <div class="empty-icon">
                             <i class="fas fa-book-open"></i>
