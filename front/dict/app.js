@@ -628,12 +628,12 @@ function initializeCardMenu() {
             menuTrigger.classList.toggle('active');
             menuButtons.classList.toggle('active');
 
-            // Меняем иконку
+            // Меняем иконку с плюса на крестик (поворот на 45 градусов делается через CSS)
             const icon = menuTrigger.querySelector('i');
             if (menuTrigger.classList.contains('active')) {
-                icon.className = 'fas fa-times';
+                // При активном состоянии - меняем на крестик (плюс повернется на 45 градусов в CSS)
             } else {
-                icon.className = 'fas fa-ellipsis-h';
+                // Возвращаем обычный плюс
             }
         }
 

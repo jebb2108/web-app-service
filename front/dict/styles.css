@@ -1060,37 +1060,36 @@ textarea {
 }
 
 .menu-trigger {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: #2e7d32;
-    border: 2px solid #2e7d32;
-    color: white;
+    background: transparent;
+    border: none;
+    color: #B8A68B; /* бледно-бежевый */
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     z-index: 101;
     position: relative;
+    margin: 5px; /* сдвигаем глубже внутрь */
 }
 
 .menu-trigger:hover {
-    background: #388e3c;
-    border-color: #388e3c;
+    color: #9C8B70; /* чуть темнее при наведении */
     transform: scale(1.1);
 }
 
 .menu-trigger.active {
-    background: #c62828;
-    border-color: #c62828;
+    color: #c62828; /* красный цвет для крестика */
     transform: rotate(45deg);
+    background: transparent;
 }
 
 .menu-trigger.active:hover {
-    background: #d32f2f;
-    border-color: #d32f2f;
+    color: #d32f2f;
 }
 
 .menu-buttons {
@@ -1110,17 +1109,18 @@ textarea {
 }
 
 .menu-btn {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: none;
-    color: white;
+    background: transparent;
+    color: #B8A68B; /* тот же бледно-бежевый цвет */
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.2rem;
     position: absolute;
     transform: scale(0.8);
     opacity: 0;
@@ -1131,39 +1131,25 @@ textarea {
     opacity: 1;
 }
 
+/* Расположение кнопок */
 .menu-btn.edit-menu-btn {
-    background: #2196F3;
-    top: -60px;
+    top: -55px; /* вверх от триггера */
     left: 0;
 }
 
 .menu-btn.delete-menu-btn {
-    background: #c62828;
     top: 0;
-    left: -60px;
+    left: -55px; /* влево от триггера */
 }
 
 .menu-btn.ai-menu-btn {
-    background: #9c27b0;
-    top: 0;
-    left: 60px;
+    top: -75px; /* выше, чем edit, и левее */
+    left: -75px;
 }
 
 .menu-btn:hover {
+    color: #9C8B70;
     transform: scale(1.1) !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.menu-btn.edit-menu-btn:hover {
-    background: #1976D2;
-}
-
-.menu-btn.delete-menu-btn:hover {
-    background: #d32f2f;
-}
-
-.menu-btn.ai-menu-btn:hover {
-    background: #7b1fa2;
 }
 
 /* Анимации появления кнопок */
@@ -1179,9 +1165,37 @@ textarea {
     transition: all 0.3s ease 0.3s;
 }
 
-/* Скрываем старые кнопки */
-.word-actions {
-    display: none !important;
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .word-card-menu {
+        top: 10px;
+        left: 10px;
+    }
+
+    .menu-trigger {
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
+    }
+
+    .menu-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+
+    .menu-btn.edit-menu-btn {
+        top: -45px;
+    }
+
+    .menu-btn.delete-menu-btn {
+        left: -45px;
+    }
+
+    .menu-btn.ai-menu-btn {
+        top: -60px;
+        left: -60px;
+    }
 }
 
 /* Для мобильных устройств */
@@ -1500,5 +1514,36 @@ textarea {
     .delete-word-btn {
         font-size: 0.85rem;
         padding: 8px 16px;
+    }
+
+    /* Стили карточек слов */
+    .word-card-menu {
+        top: 10px;
+        left: 10px;
+    }
+
+    .menu-trigger {
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
+    }
+
+    .menu-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+
+    .menu-btn.edit-menu-btn {
+        top: -45px;
+    }
+
+    .menu-btn.delete-menu-btn {
+        left: -45px;
+    }
+
+    .menu-btn.ai-menu-btn {
+        top: -60px;
+        left: -60px;
     }
 }
