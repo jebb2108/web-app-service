@@ -105,7 +105,7 @@
                 </div>
             </section>
 
-            <!-- ALL WORDS -->
+           <!-- ALL WORDS -->
             <section id="all-words" class="page">
                 <div class="card-container" id="wordsCardContainer">
                     <div class="loading-overlay" id="wordsLoading"><div class="spinner"></div></div>
@@ -114,16 +114,18 @@
                         <!-- Меню карточки в левом верхнем углу -->
                         <div class="word-card-menu">
                             <button class="menu-trigger">
-                                <i class="menu-icon fas fa-asterisk"></i>
+                                <i class="menu-icon fas fa-pencil-alt"></i>
                             </button>
-                            <div class="menu-buttons">
-                                <button class="menu-btn edit-menu-btn" data-word-id="">
+
+                            <!-- Книжные закладки над карточкой -->
+                            <div class="menu-bookmarks">
+                                <button class="bookmark-btn edit-bookmark" data-word-id="">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="menu-btn delete-menu-btn" data-word-id="">
+                                <button class="bookmark-btn delete-bookmark" data-word-id="">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button class="menu-btn ai-menu-btn" data-word-id="">
+                                <button class="bookmark-btn ai-bookmark" data-word-id="">
                                     <i class="fas fa-robot"></i>
                                 </button>
                             </div>

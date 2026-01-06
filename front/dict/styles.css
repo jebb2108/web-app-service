@@ -1116,9 +1116,10 @@ textarea {
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
 
 
+/* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
 .word-card-menu {
     position: absolute;
-    top: 25px;
+    top: 15px;
     left: 25px;
     z-index: 100;
 }
@@ -1139,117 +1140,146 @@ textarea {
 
 .menu-icon {
     color: #B8A68B;
-    font-size: 1.4rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.2rem; /* Чуть меньше, чем было */
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
 }
 
-/* Эффект "мерцания" для звездочки */
 .menu-trigger:hover .menu-icon {
     color: #9C8B70;
-    animation: star-twinkle 1.5s infinite alternate;
+    transform: scale(1.1);
 }
 
-@keyframes star-twinkle {
-    0% {
-        transform: scale(1) rotate(0deg);
-        opacity: 0.8;
-    }
-    100% {
-        transform: scale(1.1) rotate(10deg);
-        opacity: 1;
-    }
-}
-
-/* Анимация превращения звездочки в крестик */
 .menu-trigger.active .menu-icon {
     color: #c62828;
-    transform: rotate(135deg) scale(1.2); /* Поворот и увеличение */
-    animation: none; /* Отключаем мерцание при активном состоянии */
 }
 
 .menu-trigger.active:hover .menu-icon {
     color: #d32f2f;
-    transform: rotate(135deg) scale(1.3);
 }
 
 
-/* ===== КНОПКИ МЕНЮ ===== */
-
-.menu-buttons {
+/* ===== КНИЖНЫЕ ЗАКЛАДКИ НАД КАРТОЧКОЙ ===== */
+.menu-bookmarks {
     position: absolute;
-    top: 0;
+    top: -60px; /* Располагаем над карточкой */
     left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.8);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(10px);
+    transition: all 0.3s ease;
     pointer-events: none;
 }
 
-.menu-buttons.active {
+.menu-bookmarks.active {
     opacity: 1;
     visibility: visible;
-    transform: scale(1);
+    transform: translateY(0);
     pointer-events: all;
 }
 
-.menu-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: #B8A68B;
+.bookmark-btn {
+    background: #f8f5ec;
+    border: 2px solid #e0d9c0;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 15px;
+    color: #5a5a5a;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    min-width: 50px;
+    height: 40px;
+    position: relative;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+}
+
+/* Закругленные уголки внизу */
+.bookmark-btn::after {
+    content: '';
     position: absolute;
-    transform: scale(0) rotate(-180deg);
-    opacity: 0;
+    bottom: -10px;
+    left: -2px;
+    right: -2px;
+    height: 10px;
+    background: #f8f5ec;
+    border-left: 2px solid #e0d9c0;
+    border-right: 2px solid #e0d9c0;
+    border-radius: 0 0 8px 8px;
 }
 
-.menu-buttons.active .menu-btn {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
+.bookmark-btn i {
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
-/* Расположение кнопок - прямоугольный треугольник */
-.menu-btn.edit-menu-btn {
-    top: 0;
-    left: -50px;
-    transition-delay: 0.1s;
+/* Индивидуальные стили для каждой закладки */
+.bookmark-btn.edit-bookmark {
+    background: #f8f5ec;
+    border-color: #e0d9c0;
 }
 
-.menu-btn.delete-menu-btn {
-    top: -50px;
-    left: 0;
-    transition-delay: 0.2s;
+.bookmark-btn.delete-bookmark {
+    background: #ffebee;
+    border-color: #ffcdd2;
 }
 
-.menu-btn.ai-menu-btn {
-    top: -50px;
-    left: -50px;
-    transition-delay: 0.3s;
+.bookmark-btn.ai-bookmark {
+    background: #f3e5f5;
+    border-color: #e1bee7;
 }
 
-.menu-btn:hover {
-    color: #9C8B70;
-    transform: scale(1.15) !important;
+.bookmark-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
 }
+
+.bookmark-btn.edit-bookmark:hover {
+    background: #e8e0c9;
+    border-color: #2e7d32;
+    color: #2e7d32;
+}
+
+.bookmark-btn.delete-bookmark:hover {
+    background: #ffcdd2;
+    border-color: #c62828;
+    color: #c62828;
+}
+
+.bookmark-btn.ai-bookmark:hover {
+    background: #e1bee7;
+    border-color: #9c27b0;
+    color: #9c27b0;
+}
+
+/* Анимация появления закладок с задержкой */
+.menu-bookmarks.active .bookmark-btn:nth-child(1) {
+    transition: all 0.3s ease 0.1s;
+}
+
+.menu-bookmarks.active .bookmark-btn:nth-child(2) {
+    transition: all 0.3s ease 0.2s;
+}
+
+.menu-bookmarks.active .bookmark-btn:nth-child(3) {
+    transition: all 0.3s ease 0.3s;
+}
+
+
 
 /* ===== ИНДИКАТОР ПУБЛИЧНОГО СЛОВА ===== */
 .public-word-indicator {
     position: absolute;
     top: 15px;
-    right: 15px;
+    right: 20px;
     color: #2e7d32;
     font-size: 1.6rem;
     opacity: 0.9;
@@ -1260,12 +1290,6 @@ textarea {
     justify-content: center;
     width: 50px;
     height: 50px;
-}
-
-.public-word-indicator:hover {
-    opacity: 1;
-    color: #1b5e20;
-    transform: scale(1.1) rotate(10deg);
 }
 
 .public-word-indicator i {
@@ -1525,38 +1549,33 @@ textarea {
         gap: 8px;
     }
 
-    .edit-word-btn,
-    .delete-word-btn {
-        font-size: 0.85rem;
-        padding: 8px 16px;
-    }
-
     .word-card-menu {
-        top: 15px;
+        top: 20px;
         left: 20px;
     }
 
     .menu-icon {
-        font-size: 1.2rem;
-    }
-
-    .menu-btn {
-        width: 28px;
-        height: 28px;
         font-size: 1rem;
     }
 
-    .menu-btn.edit-menu-btn {
-        left: -40px;
+    .menu-bookmarks {
+        top: -50px;
+        gap: 5px;
+        justify-content: flex-start;
+        padding-left: 10px;
+        overflow-x: auto;
+        max-width: 100%;
     }
 
-    .menu-btn.delete-menu-btn {
-        top: -40px;
+    .bookmark-btn {
+        min-width: 40px;
+        height: 35px;
+        padding: 6px 10px;
+        flex-shrink: 0;
     }
 
-    .menu-btn.ai-menu-btn {
-        top: -40px;
-        left: -40px;
+    .bookmark-btn i {
+        font-size: 0.9rem;
     }
 
     .public-word-indicator {
@@ -1565,15 +1584,6 @@ textarea {
         font-size: 1.4rem;
         width: 44px;
         height: 44px;
-    }
-
-    @keyframes star-twinkle {
-        0% {
-            transform: scale(1) rotate(0deg);
-        }
-        100% {
-            transform: scale(1.05) rotate(5deg);
-        }
     }
 
     /* Мобильные стили для отображения нескольких переводов */

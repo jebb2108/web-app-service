@@ -615,16 +615,15 @@ async function loadWords() {
     }
 }
 
-// Добавьте эту функцию для инициализации меню карточки
 function initializeCardMenu() {
     const wordCard = document.getElementById('wordCard');
     if (!wordCard) return;
 
     const menuTrigger = wordCard.querySelector('.menu-trigger');
     const menuIcon = wordCard.querySelector('.menu-icon');
-    const menuButtons = wordCard.querySelector('.menu-buttons');
+    const menuBookmarks = wordCard.querySelector('.menu-bookmarks');
 
-    // Простой переключатель меню
+    // Переключатель меню
     menuTrigger.addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -632,49 +631,49 @@ function initializeCardMenu() {
         const isActive = !this.classList.contains('active');
 
         if (isActive) {
-            // Открываем меню: звездочка превращается в крестик
+            // Открываем меню: карандаш → красный крестик
             this.classList.add('active');
             menuIcon.className = 'menu-icon fas fa-times'; // Меняем на крестик
-            menuButtons.classList.add('active');
+            menuBookmarks.classList.add('active');
         } else {
-            // Закрываем меню: крестик превращается в звездочку
+            // Закрываем меню: крестик → карандаш
             this.classList.remove('active');
-            menuIcon.className = 'menu-icon fas fa-asterisk'; // Возвращаем звездочку
-            menuButtons.classList.remove('active');
+            menuIcon.className = 'menu-icon fas fa-pencil-alt'; // Возвращаем карандаш
+            menuBookmarks.classList.remove('active');
         }
     });
 
-    // Обработчики для кнопок меню
+    // Обработчики для кнопок-закладок
     wordCard.addEventListener('click', function(e) {
         // Обработчик для кнопки редактирования
-        const editBtn = e.target.closest('.edit-menu-btn');
+        const editBtn = e.target.closest('.edit-bookmark');
         if (editBtn) {
             const wordId = editBtn.getAttribute('data-word-id');
             if (wordId) {
                 closeCardMenu();
-                setTimeout(() => enterEditMode(wordId), 150);
+                setTimeout(() => enterEditMode(wordId), 100);
             }
             return;
         }
 
         // Обработчик для кнопки удаления
-        const deleteBtn = e.target.closest('.delete-menu-btn');
+        const deleteBtn = e.target.closest('.delete-bookmark');
         if (deleteBtn) {
             const wordId = deleteBtn.getAttribute('data-word-id');
             if (wordId) {
                 closeCardMenu();
-                setTimeout(() => deleteWord(wordId), 150);
+                setTimeout(() => deleteWord(wordId), 100);
             }
             return;
         }
 
-        // Обработчик для AI кнопки (заглушка)
-        const aiBtn = e.target.closest('.ai-menu-btn');
+        // Обработчик для AI кнопки
+        const aiBtn = e.target.closest('.ai-bookmark');
         if (aiBtn) {
             closeCardMenu();
             setTimeout(() => {
                 showNotification('AI функция находится в разработке', 'success');
-            }, 150);
+            }, 100);
             return;
         }
     });
@@ -694,12 +693,12 @@ function closeCardMenu() {
 
     const menuTrigger = wordCard.querySelector('.menu-trigger');
     const menuIcon = wordCard.querySelector('.menu-icon');
-    const menuButtons = wordCard.querySelector('.menu-buttons');
+    const menuBookmarks = wordCard.querySelector('.menu-bookmarks');
 
     if (menuTrigger && menuTrigger.classList.contains('active')) {
         menuTrigger.classList.remove('active');
-        menuIcon.className = 'menu-icon fas fa-asterisk'; // Всегда возвращаем звездочку
-        menuButtons.classList.remove('active');
+        menuIcon.className = 'menu-icon fas fa-pencil-alt';
+        menuBookmarks.classList.remove('active');
     }
 }
 
@@ -801,14 +800,14 @@ function displayCurrentCard() {
         }
     }
 
-    // Устанавливаем data-word-id для кнопок меню
-    const menuEditBtn = wordCard.querySelector('.edit-menu-btn');
-    const menuDeleteBtn = wordCard.querySelector('.delete-menu-btn');
-    const menuAiBtn = wordCard.querySelector('.ai-menu-btn');
+    // Устанавливаем data-word-id для кнопок-закладок
+    const editBookmark = wordCard.querySelector('.edit-bookmark');
+    const deleteBookmark = wordCard.querySelector('.delete-bookmark');
+    const aiBookmark = wordCard.querySelector('.ai-bookmark');
 
-    if (menuEditBtn) menuEditBtn.setAttribute('data-word-id', currentWord.id);
-    if (menuDeleteBtn) menuDeleteBtn.setAttribute('data-word-id', currentWord.id);
-    if (menuAiBtn) menuAiBtn.setAttribute('data-word-id', currentWord.id);
+    if (editBookmark) editBookmark.setAttribute('data-word-id', currentWord.id);
+    if (deleteBookmark) deleteBookmark.setAttribute('data-word-id', currentWord.id);
+    if (aiBookmark) aiBookmark.setAttribute('data-word-id', currentWord.id);
 
     // Закрываем меню при смене карточки
     closeCardMenu();
