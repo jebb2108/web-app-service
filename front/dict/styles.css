@@ -1055,6 +1055,8 @@ textarea {
 .word-translation.multiple {
     text-align: left;
     width: 100%;
+    margin-top: 15px;
+    padding-left: 15px; /* Отступ для выравнивания с числами */
 }
 
 .translation-list {
@@ -1067,41 +1069,73 @@ textarea {
 .translation-item {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 8px;
-    padding: 5px 0;
-    border-bottom: 1px dashed #f0e6d2;
+    margin-bottom: 12px;
+    position: relative;
 }
 
 .translation-item:last-child {
-    border-bottom: none;
     margin-bottom: 0;
 }
 
 .translation-number {
     font-weight: bold;
     color: #2e7d32;
-    min-width: 25px;
+    width: 25px;
     padding-right: 10px;
-    text-align: center;
+    text-align: right;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
-.translation-text {
+.translation-content {
     flex-grow: 1;
-    color: #5a5a5a;
-    font-size: 1.4rem;
-    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
 }
 
 .translation-pos {
-    color: #888;
-    font-size: 0.9rem;
+    color: #aaa; /* Еле заметный серый */
+    font-size: 0.8rem;
     font-style: italic;
-    min-width: 60px;
-    text-align: right;
-    padding-left: 10px;
+    margin-bottom: 3px;
+    font-weight: 300;
+}
+
+.translation-text {
+    color: #5a5a5a;
+    font-size: 1.1rem; /* Шрифт поменьше */
+    line-height: 1.4;
+}
+
+/* Для одного перевода добавляем отступ */
+.word-translation:not(.multiple) {
+    margin-top: 5px;
+    font-size: 1.3rem; /* Немного меньше, чем у слова */
+}
+
+
+/* Отступы для заголовка слова */
+.word-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 5px; /* Уменьшаем отступ снизу */
+    text-transform: lowercase;
+}
+
+.word-main {
+    margin-bottom: 10px;
 }
 
 /* ===== СТИЛИ ДЛЯ МЕНЮ КАРТОЧКИ СЛОВА ===== */
+
+
+.word-card-menu {
+    position: absolute;
+    top: 20px; /* Выравниваем с иконкой публичности */
+    left: 20px; /* Отступ от левого края */
+    z-index: 100;
+}
 
 .menu-trigger {
     width: 32px;
@@ -1174,20 +1208,20 @@ textarea {
     opacity: 1;
 }
 
-/* Расположение кнопок - все на одном уровне */
+/* Расположение кнопок - прямоУгольный треугольник */
 .menu-btn.edit-menu-btn {
     top: 0;
-    left: -60px; /* влево от триггера */
+    left: -50px; /* слева от триггера */
 }
 
 .menu-btn.delete-menu-btn {
-    top: -60px; /* вверх от триггера */
-    left: 0;
+    top: -50px; /* над edit */
+    left: 0; /* правее AI (относительно edit) */
 }
 
 .menu-btn.ai-menu-btn {
-    top: 0;
-    left: 60px; /* вправо от триггера */
+    top: -50px; /* над edit */
+    left: -50px; /* слева от delete, над edit */
 }
 
 .menu-btn:hover {

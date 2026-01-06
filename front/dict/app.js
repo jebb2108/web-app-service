@@ -742,7 +742,7 @@ function displayCurrentCard() {
                 cardPosElement.style.display = 'block';
             }
         } else {
-            // Несколько переводов - отображаем в столбец
+            // Несколько переводов - отображаем в столбец с новой структурой
             cardTranslationElement.classList.add('multiple');
 
             const translationList = document.createElement('ul');
@@ -752,28 +752,37 @@ function displayCurrentCard() {
                 const translationItem = document.createElement('li');
                 translationItem.className = 'translation-item';
 
+                // Номер
                 const numberSpan = document.createElement('span');
                 numberSpan.className = 'translation-number';
                 numberSpan.textContent = `${index + 1}.`;
 
+                // Контейнер для части речи и перевода
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'translation-content';
+
+                // Часть речи (еле заметным серым шрифтом)
+                const posSpan = document.createElement('span');
+                posSpan.className = 'translation-pos';
+                posSpan.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
+
+                // Перевод (шрифтом поменьше)
                 const textSpan = document.createElement('span');
                 textSpan.className = 'translation-text';
                 textSpan.textContent = translation;
 
-                const posSpan = document.createElement('span');
-                posSpan.className = 'translation-pos';
-                posSpan.textContent = `(${getPartOfSpeechName(currentWord.part_of_speech || '')})`;
+                contentDiv.appendChild(posSpan);
+                contentDiv.appendChild(textSpan);
 
                 translationItem.appendChild(numberSpan);
-                translationItem.appendChild(textSpan);
-                translationItem.appendChild(posSpan);
+                translationItem.appendChild(contentDiv);
                 translationList.appendChild(translationItem);
             });
 
             cardTranslationElement.appendChild(translationList);
             cardTranslationElement.style.display = 'block';
 
-            // Скрываем отдельную часть речи, так как она теперь рядом с каждым переводом
+            // Скрываем отдельную часть речи, так как она теперь отображается над каждым переводом
             if (cardPosElement) {
                 cardPosElement.style.display = 'none';
             }
