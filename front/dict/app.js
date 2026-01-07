@@ -554,11 +554,20 @@ async function loadWords() {
             data = JSON.parse(text);
             console.debug('loadWords: raw data', data);
 
-            // НОВЫЙ ФОРМАТ: данные приходят как объект с ключом user_id
-            if (data && typeof data === 'object' && !Array.isArray(data)) {
-                // Извлекаем массив слов из объекта по ключу user_id
+            // НОВЫЙ ФОРМАТ: данные приходят как объект с ключом user_id (строка)
+            if (data && typeof data === 'object') {
+                // Ищем ключ, соответствующий user_id (может быть строкой или числом)
                 const userIdKey = String(currentUserId);
+                console.debug('Looking for key:', userIdKey, 'in data keys:', Object.keys(data));
+
+                // Пробуем найти данные по ключу-строке (новый формат)
                 currentWords = data[userIdKey] || [];
+
+                // Если не нашли, пробуем найти по ключу-числу (старый формат)
+                if (currentWords.length === 0 && data[currentUserId]) {
+                    currentWords = data[currentUserId] || [];
+                }
+
                 console.debug('loadWords: extracted words', currentWords);
             } else {
                 // Старый формат (массив) для обратной совместимости
@@ -590,6 +599,41 @@ async function loadWords() {
     } finally {
         if (wordsLoading) wordsLoading.style.display = 'none';
     }
+}
+
+// Функция для преобразования структуры слова
+function transformWordStructure(word) {
+    // Если уже есть поле translationsArray (уже преобразовано), пропускаем
+    if (word.translationsArray) return word;
+
+    const result = { ...word };
+
+    // Извлекаем переводы из нового формата
+    if (word.translations && typeof word.translations === 'object') {
+        const translationsObj = word.translations;
+        const translationsArray = [];
+
+        // Сортируем ключи (1, 2, 3...)
+        const sortedKeys = Object.keys(translationsObj).sort((a, b) => parseInt(a) - parseInt(b));
+
+        sortedKeys.forEach(key => {
+            if (translationsObj[key] && translationsObj[key].translation) {
+                translationsArray.push(translationsObj[key].translation);
+            }
+        });
+
+        // Сохраняем как массив для удобства использования
+        result.translationsArray = translationsArray;
+        // Также сохраняем оригинальную структуру переводов для отправки на сервер
+        result.originalTranslations = translationsObj;
+    } else {
+        // Для обратной совместимости со старым форматом
+        result.translationsArray = Array.isArray(word.translation) ?
+            word.translation :
+            (word.translation ? [word.translation] : []);
+    }
+
+    return result;
 }
 
 
@@ -832,7 +876,12 @@ function displayCurrentCard() {
     const deleteBookmark = wordCard.querySelector('.delete-bookmark');
     const aiBookmark = wordCard.querySelector('.ai-bookmark');
 
-    if (editBookmark) editBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
+    if (editBookmark) {
+        const wordId = currentWord.id || currentWord.word_id;
+        editBookmark.setAttribute('data-word-id', wordId);
+        console.log('Setting edit button with word id:', wordId, 'type:', typeof wordId, 'word:', currentWord);
+    }
+
     if (deleteBookmark) deleteBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
     if (aiBookmark) aiBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
 
@@ -1183,10 +1232,23 @@ async function addWord() {
 }
 // --- Edit word functionality ---
 function enterEditMode(wordId) {
-    const word = currentWords.find(w => (w.id === wordId) || (w.word_id === wordId));
-    if (!word) return;
+    console.log('Entering edit mode for wordId:', wordId, 'currentWords:', currentWords);
 
-    console.debug('Entering edit mode for word:', word);
+    const word = currentWords.find(w => {
+        // Пробуем разные поля для поиска слова
+        if (w.id === wordId || w.word_id === wordId) return true;
+        // Также пробуем сравнить как строки на случай, если типы разные
+        if (String(w.id) === String(wordId) || String(w.word_id) === String(wordId)) return true;
+        return false;
+    });
+
+    if (!word) {
+        console.error('Word not found for editing:', wordId, currentWords);
+        showNotification('Слово не найдено для редактирования', 'error');
+        return;
+    }
+
+    console.debug('Found word for editing:', word);
 
     isEditingMode = true;
     editingWordId = wordId;
