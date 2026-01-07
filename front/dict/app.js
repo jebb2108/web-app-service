@@ -526,7 +526,6 @@ function populateTranslationFields(translations, partOfSpeech) {
 }
 
 // --- Load words ---
-// --- Load words ---
 async function loadWords() {
     if (!currentUserId) {
         showNotification('user_id не определен', 'error');
@@ -565,7 +564,7 @@ async function loadWords() {
             else if (data && typeof data === 'object') {
                 // Данные пришли в виде объекта с ключом user_id (старый формат)
                 console.log('Получен объект, ключи:', Object.keys(data));
-                const userIdKey = String(currentUserId);
+                const userIdKey = Number(currentUserId);
 
                 // Пробуем найти данные по ключу
                 if (data[userIdKey]) {
