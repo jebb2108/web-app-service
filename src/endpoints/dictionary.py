@@ -1,5 +1,6 @@
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
+
 
 from src.config import config
 from src.logconf import opt_logger as log
@@ -33,10 +34,10 @@ async def api_add_word_handler(request: Word,):
         url = config.gateway.url + f'/api/words?user_id={request.user_id}'
         resp = await client.post(url=url, content=request.model_dump_json())
         if resp.status_code == 200:
-            logger.info("Word`s been loaded, and cache`s been removed")
-            return 200
-        else:
-            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+            return Response(status_code=200)
+
+        logger.warning('Malfunction occured in api_add_word_handler')
+        raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
 
 @router.delete("/words")
@@ -49,9 +50,10 @@ async def api_delete_word_handler(
             url = config.gateway.url + f'/api/words?user_id={user_id}&word_id={word_id}'
             resp = await client.delete(url=url)
             if resp.status_code == 200:
-                return 200
-            else:
-                raise HTTPException(status_code=resp.status_code, detail=resp.text)
+                return Response(status_code=200)
+
+            logger.warning('Malfunction occured in api_delete_word_handler')
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
     except Exception as e:
         logger.error(f"Error in api_delete_word_handler: {str(e)}")
@@ -75,10 +77,12 @@ async def api_search_word_handler(
             )
 
             if not user_word_resp.status_code == 200:
+                logger.warning('Malfunction occured in api_search_word_handler')
                 raise HTTPException(
                     status_code=user_word_resp.status_code, detail=user_word_resp.text
                 )
             if not all_words_resp.status_code == 200:
+                logger.warning('Malfunction occured in api_search_word_handler')
                 raise HTTPException(
                     status_code=all_words_resp.status_code, detail=all_words_resp.text
                 )

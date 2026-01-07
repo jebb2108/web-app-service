@@ -22,21 +22,6 @@ const API_BASE_URL = 'https://dict.lllang.site';
 console.log('API Base URL:', API_BASE_URL);
 console.log('Current location:', window.location.protocol + '//' + window.location.host);
 
-// --- TEST DATA - для тестирования редактирования (удалите этот блок после тестирования) ---
-const TEST_WORDS = [
-    {
-        id: 'test-123',
-        word: 'example',
-        translation: ['пример', 'образец'],
-        part_of_speech: 'noun',
-        context: 'This is an example sentence for testing.',
-        audio_url: '',
-        is_public: true,
-        created_at: new Date().toISOString()
-    }
-];
-// --- КОНЕЦ ТЕСТОВЫХ ДАННЫХ ---
-
 // --- Helpers ---
 function showNotification(message, type='success') {
     if (!notificationElement) return;
@@ -147,7 +132,6 @@ function handleTranslationInput(inputElement) {
     changeTimers[fieldIndex] = setTimeout(() => {
         // Отмечаем поле как измененное
         fieldChangedState[fieldIndex] = true;
-        console.log(`Поле ${fieldIndex} отмечено как измененное`);
         updateTranslationAddButtons();
     }, 1000);
 
@@ -214,14 +198,9 @@ function updateTranslationAddButtons() {
     const currentPartOfSpeech = partOfSpeechSelect.value;
     const hasWord = wordInput.value.trim() !== '';
 
-    console.log('updateTranslationAddButtons вызвана');
-    console.log('Часть речи:', currentPartOfSpeech, 'Есть слово:', hasWord);
-
     // Проверяем количество полей
     const fields = translationsContainer.querySelectorAll('.translation-input-wrapper');
     const fieldsCount = fields.length;
-
-    console.log('Количество полей:', fieldsCount, 'Состояния изменений:', fieldChangedState);
 
     // Удаляем все кнопки со всех полей
     fields.forEach(field => {
@@ -240,10 +219,7 @@ function updateTranslationAddButtons() {
                 const partOfSpeechChanged = currentPartOfSpeech !== '';
                 const textChanged = fieldChangedState[0] || false;
 
-                console.log(`Первое поле: partOfSpeechChanged=${partOfSpeechChanged}, textChanged=${textChanged}, hasWord=${hasWord}`);
-
                 if (partOfSpeechChanged && textChanged && hasWord) {
-                    console.log('Показываем плюс на первом поле');
                     addAddButton(field, index);
                 }
                 // Иначе ничего не показываем
@@ -257,8 +233,6 @@ function updateTranslationAddButtons() {
             if (fieldsCount === 2) {
                 // Два поля
                 const isChanged = fieldChangedState[1] || false;
-                console.log(`Второе поле (2 поля всего): isChanged=${isChanged}`);
-
                 if (isChanged) {
                     addAddButton(field, index);
                 } else {
@@ -266,7 +240,6 @@ function updateTranslationAddButtons() {
                 }
             } else if (fieldsCount === 3) {
                 // Три поля - всегда минус
-                console.log('Второе поле (3 поля всего): показываем минус');
                 addRemoveButton(field, index);
             }
             return;
@@ -275,7 +248,6 @@ function updateTranslationAddButtons() {
         // ТРЕТЬЕ ПОЛЕ (индекс 2)
         if (index === 2 && fieldsCount === 3) {
             // Всегда минус
-            console.log('Третье поле: показываем минус');
             addRemoveButton(field, index);
         }
     });
@@ -297,7 +269,6 @@ function addAddButton(field, index) {
     });
 
     field.appendChild(addBtn);
-    console.log(`Добавлена кнопка плюс на поле ${index}`);
 }
 
 // Создание нового поля перевода
@@ -350,7 +321,6 @@ function createNewTranslationField(isThirdField, partOfSpeech) {
     // Инициализируем состояние для нового поля
     const fieldIndex = Array.from(translationsContainer.children).length - 1;
     fieldChangedState[fieldIndex] = false;
-    console.log(`Создано новое поле ${fieldIndex}, состояние изменений:`, fieldChangedState);
 }
 
 
@@ -370,7 +340,6 @@ function addRemoveButton(field, index) {
     });
 
     field.appendChild(removeBtn);
-    console.log(`Добавлена кнопка минус на поле ${index}`);
 }
 
 // Удаление поля перевода
@@ -415,8 +384,6 @@ function updateChangeStateAfterRemoval(removedIndex) {
     });
 
     fieldChangedState = newState;
-    console.log('Обновленное состояние изменений после удаления:', fieldChangedState);
-
     // Очищаем все таймеры, кроме первого поля
     Object.keys(changeTimers).forEach(key => {
         const index = parseInt(key);
@@ -554,8 +521,6 @@ function populateTranslationFields(translations, partOfSpeech) {
         fieldChangedState[i] = false;
     }
 
-    console.log('Поля заполнены, состояния изменений:', fieldChangedState);
-
     // Обновляем кнопки
     updateTranslationAddButtons();
 }
@@ -585,18 +550,30 @@ async function loadWords() {
         }
 
         let data;
-        try { data = JSON.parse(text); } catch (e) { throw new Error('Неверный формат JSON от сервера'); }
+        try {
+            data = JSON.parse(text);
+            console.debug('loadWords: raw data', data);
 
-        console.debug('loadWords: data', data);
-        currentWords = Array.isArray(data) ? data : [];
-
-        // --- ДЛЯ ТЕСТИРОВАНИЯ: добавляем тестовое слово если нет реальных данных ---
-        // Удалите этот блок после тестирования!
-        if (currentWords.length === 0) {
-            console.log('Добавляем тестовое слово для демонстрации');
-            currentWords = [...TEST_WORDS];
+            // НОВЫЙ ФОРМАТ: данные приходят как объект с ключом user_id
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                // Извлекаем массив слов из объекта по ключу user_id
+                const userIdKey = String(currentUserId);
+                currentWords = data[userIdKey] || [];
+                console.debug('loadWords: extracted words', currentWords);
+            } else {
+                // Старый формат (массив) для обратной совместимости
+                currentWords = Array.isArray(data) ? data : [];
+            }
+        } catch (e) {
+            throw new Error('Неверный формат JSON от сервера');
         }
-        // --- КОНЕЦ ТЕСТОВОГО БЛОКА ---
+
+        // Преобразуем структуру переводов для удобства использования
+        currentWords = currentWords.map(word => {
+            return transformWordStructure(word);
+        });
+
+        console.debug('loadWords: transformed words', currentWords);
 
         // Сортируем слова по алфавиту
         currentWords.sort((a, b) => {
@@ -614,6 +591,43 @@ async function loadWords() {
         if (wordsLoading) wordsLoading.style.display = 'none';
     }
 }
+
+
+// Функция для преобразования структуры слова
+function transformWordStructure(word) {
+    // Если уже есть поле translationsArray (уже преобразовано), пропускаем
+    if (word.translationsArray) return word;
+
+    const result = { ...word };
+
+    // Извлекаем переводы из нового формата
+    if (word.translations && typeof word.translations === 'object') {
+        const translationsObj = word.translations;
+        const translationsArray = [];
+
+        // Сортируем ключи (1, 2, 3...)
+        const sortedKeys = Object.keys(translationsObj).sort((a, b) => parseInt(a) - parseInt(b));
+
+        sortedKeys.forEach(key => {
+            if (translationsObj[key] && translationsObj[key].translation) {
+                translationsArray.push(translationsObj[key].translation);
+            }
+        });
+
+        // Сохраняем как массив для удобства использования
+        result.translationsArray = translationsArray;
+        // Также сохраняем исходный объект переводов для отправки на сервер
+        result.originalTranslations = translationsObj;
+    } else {
+        // Для обратной совместимости со старым форматом
+        result.translationsArray = Array.isArray(word.translation) ?
+            word.translation :
+            (word.translation ? [word.translation] : []);
+    }
+
+    return result;
+}
+
 
 function initializeCardMenu() {
     const wordCard = document.getElementById('wordCard');
@@ -718,6 +732,7 @@ function displayCurrentCard() {
     if (emptyState) emptyState.style.display = 'none';
 
     const currentWord = currentWords[currentCardIndex];
+    console.debug('Displaying word:', currentWord);
 
     // Обновляем содержимое карточки
     const cardWordElement = document.getElementById('cardWord');
@@ -726,13 +741,9 @@ function displayCurrentCard() {
 
     if (cardWordElement) cardWordElement.textContent = currentWord.word || '';
 
-    // Обрабатываем переводы (могут быть массивом или строкой)
-    let translations = [];
-    if (Array.isArray(currentWord.translation)) {
-        translations = currentWord.translation;
-    } else if (typeof currentWord.translation === 'string') {
-        translations = [currentWord.translation];
-    }
+    // Используем translationsArray для отображения
+    const translations = currentWord.translationsArray || [];
+    const hasMultipleTranslations = translations.length > 1;
 
     // Очищаем элемент перевода
     if (cardTranslationElement) {
@@ -748,7 +759,14 @@ function displayCurrentCard() {
 
             // Отображаем часть речи отдельно
             if (cardPosElement) {
-                cardPosElement.textContent = getPartOfSpeechName(currentWord.part_of_speech || '');
+                // Получаем часть речи из оригинальной структуры
+                let partOfSpeech = '';
+                if (currentWord.originalTranslations && currentWord.originalTranslations['1']) {
+                    partOfSpeech = currentWord.originalTranslations['1'].part_of_speech;
+                } else if (currentWord.part_of_speech) {
+                    partOfSpeech = currentWord.part_of_speech;
+                }
+                cardPosElement.textContent = getPartOfSpeechName(partOfSpeech || '');
                 cardPosElement.style.display = 'block';
             }
         } else {
@@ -774,7 +792,16 @@ function displayCurrentCard() {
                 // Часть речи (сокращение с точкой)
                 const posSpan = document.createElement('span');
                 posSpan.className = 'translation-pos';
-                const abbreviation = getPartOfSpeechAbbreviation(currentWord.part_of_speech || '');
+
+                // Получаем часть речи для этого перевода
+                let partOfSpeech = '';
+                if (currentWord.originalTranslations && currentWord.originalTranslations[String(index + 1)]) {
+                    partOfSpeech = currentWord.originalTranslations[String(index + 1)].part_of_speech;
+                } else if (currentWord.part_of_speech) {
+                    partOfSpeech = currentWord.part_of_speech;
+                }
+
+                const abbreviation = getPartOfSpeechAbbreviation(partOfSpeech || '');
                 posSpan.textContent = abbreviation ? `${abbreviation}.` : '';
 
                 // Перевод (в той же строке)
@@ -805,9 +832,9 @@ function displayCurrentCard() {
     const deleteBookmark = wordCard.querySelector('.delete-bookmark');
     const aiBookmark = wordCard.querySelector('.ai-bookmark');
 
-    if (editBookmark) editBookmark.setAttribute('data-word-id', currentWord.id);
-    if (deleteBookmark) deleteBookmark.setAttribute('data-word-id', currentWord.id);
-    if (aiBookmark) aiBookmark.setAttribute('data-word-id', currentWord.id);
+    if (editBookmark) editBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
+    if (deleteBookmark) deleteBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
+    if (aiBookmark) aiBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
 
     // Закрываем меню при смене карточки
     closeCardMenu();
@@ -1156,15 +1183,26 @@ async function addWord() {
 }
 // --- Edit word functionality ---
 function enterEditMode(wordId) {
-    const word = currentWords.find(w => w.id === wordId);
+    const word = currentWords.find(w => (w.id === wordId) || (w.word_id === wordId));
     if (!word) return;
+
+    console.debug('Entering edit mode for word:', word);
 
     isEditingMode = true;
     editingWordId = wordId;
 
     // Заполняем форму
     document.getElementById('newWord').value = word.word || '';
-    document.getElementById('partOfSpeech').value = word.part_of_speech || '';
+
+    // Устанавливаем часть речи (берем из первого перевода)
+    let partOfSpeech = '';
+    if (word.originalTranslations && word.originalTranslations['1']) {
+        partOfSpeech = word.originalTranslations['1'].part_of_speech;
+    } else if (word.part_of_speech) {
+        partOfSpeech = word.part_of_speech;
+    }
+
+    document.getElementById('partOfSpeech').value = partOfSpeech || '';
     document.getElementById('context').value = word.context || '';
     document.getElementById('wordPublic').checked = word.is_public || false;
 
@@ -1178,8 +1216,9 @@ function enterEditMode(wordId) {
         }
     }
 
-    // Заполняем переводы с сохраненной частью речи для каждого бейджа
-    populateTranslationFields(word.translation, word.part_of_speech);
+    // Заполняем переводы (используем translationsArray)
+    const translations = word.translationsArray || [];
+    populateTranslationFields(translations, partOfSpeech);
 
     // Меняем текст кнопки
     const addWordBtn = document.getElementById('addWordBtn');
@@ -1276,30 +1315,37 @@ async function findTranslation() {
         searchResult.innerHTML = '';
 
         if (result) {
-            // 1) Слово пользователя - проверяем, что оно действительно существует
-            const hasValidUserWord = result.user_word &&
-                                   result.user_word.word &&
-                                   result.user_word.word.trim() !== '';
-
-            if (hasValidUserWord) {
-                const userWordCard = createUserWordCard(result.user_word);
+            // 1) Слово пользователя - преобразуем структуру если нужно
+            if (result.user_word) {
+                const transformedWord = transformWordStructure(result.user_word);
+                const userWordCard = createUserWordCard(transformedWord);
                 searchResult.appendChild(userWordCard);
             }
 
             // 2) Слова других пользователей
-            const hasOtherWords = result.all_users_words &&
-                                Object.keys(result.all_users_words).length > 0;
+            if (result.all_users_words && typeof result.all_users_words === 'object') {
+                // Преобразуем все слова других пользователей
+                const otherWords = [];
+                Object.keys(result.all_users_words).forEach(userId => {
+                    const userWords = result.all_users_words[userId];
+                    if (Array.isArray(userWords)) {
+                        userWords.forEach(word => {
+                            if (word) otherWords.push(transformWordStructure(word));
+                        });
+                    }
+                });
 
-            if (hasOtherWords) {
-                const otherWordsContainer = createOtherUsersWords(result.all_users_words);
-                if (otherWordsContainer.children.length > 0) {
-                    searchResult.appendChild(otherWordsContainer);
+                if (otherWords.length > 0) {
+                    const otherWordsContainer = createOtherUsersWords(otherWords);
+                    if (otherWordsContainer.children.length > 0) {
+                        searchResult.appendChild(otherWordsContainer);
+                    }
                 }
             }
 
             // 3) Если ничего нет - сообщение
-            const hasContent = hasValidUserWord ||
-                             (hasOtherWords && searchResult.children.length > 0);
+            const hasContent = result.user_word ||
+                             (result.all_users_words && Object.keys(result.all_users_words).length > 0);
 
             if (!hasContent) {
                 const emptyMessage = document.createElement('div');
@@ -1344,18 +1390,13 @@ function createUserWordCard(userWord) {
     const date = new Date(userWord.created_at);
     const formattedDate = date.toLocaleDateString('ru-RU');
 
-    // Обрабатываем переводы (предполагаем, что это массив или строка)
-    let translations = [];
-    if (Array.isArray(userWord.translation)) {
-        translations = userWord.translation.slice(0, 3);
-    } else if (typeof userWord.translation === 'string') {
-        translations = [userWord.translation];
-    }
+    // Используем translationsArray для отображения
+    const translations = userWord.translationsArray || [];
 
     card.innerHTML = `
         <div class="user-word-header">
             <span class="user-word-text">${escapeHTML(userWord.word)}</span>
-            <span class="user-word-pos">${getPartOfSpeechName(userWord.part_of_speech)}</span>
+            <span class="user-word-pos">${getPartOfSpeechName(userWord.part_of_speech || '')}</span>
         </div>
         <div class="user-word-translations">
             <ol>
@@ -1368,24 +1409,13 @@ function createUserWordCard(userWord) {
     return card;
 }
 
-function createOtherUsersWords(wordsDict) {
+function createOtherUsersWords(wordsArray) {
     const container = document.createElement('div');
     container.className = 'other-users-words';
 
-    console.log('🔧 Обрабатываем слова других пользователей:', wordsDict);
+    console.log('🔧 Обрабатываем слова других пользователей:', wordsArray);
 
-    // Если wordsDict - это массив, обрабатываем как массив
-    let wordsArray = [];
-    if (Array.isArray(wordsDict)) {
-        wordsArray = wordsDict.slice(0, 3);
-    } else if (wordsDict && typeof wordsDict === 'object') {
-        // Если это объект, преобразуем в массив
-        wordsArray = Object.values(wordsDict).slice(0, 3);
-    }
-
-    console.log('📝 Отфильтрованный массив слов:', wordsArray);
-
-    if (wordsArray.length === 0) {
+    if (!wordsArray || wordsArray.length === 0) {
         console.log('❌ Нет слов для отображения');
         return container;
     }
@@ -1395,8 +1425,8 @@ function createOtherUsersWords(wordsDict) {
     title.textContent = 'Переводы других пользователей';
     container.appendChild(title);
 
-    // Создаем элементы для каждого слова
-    wordsArray.forEach((wordData, index) => {
+    // Создаем элементы для каждого слова (максимум 3)
+    wordsArray.slice(0, 3).forEach((wordData, index) => {
         console.log(`🔤 Обрабатываем слово ${index + 1}:`, wordData);
 
         // Проверка валидности слова
@@ -1415,7 +1445,7 @@ function createOtherUsersWords(wordsDict) {
 function createOtherUserWord(wordData) {
     const wordElement = document.createElement('div');
     wordElement.className = 'other-user-word';
-    wordElement.setAttribute('data-word-id', wordData.id || '');
+    wordElement.setAttribute('data-word-id', wordData.id || wordData.word_id || '');
 
     console.log('🎨 Создаем элемент для слова:', wordData);
 
@@ -1433,19 +1463,12 @@ function createOtherUserWord(wordData) {
     const dislikes = wordData.dislikes || '';
     const comments = wordData.comments || '';
 
-    // Получаем перевод
-    let translationText = '';
-    if (Array.isArray(wordData.translation)) {
-        translationText = wordData.translation.slice(0, 1).join(', ');
-    } else if (typeof wordData.translation === 'string') {
-        translationText = wordData.translation;
-    } else if (wordData.translations && Array.isArray(wordData.translations)) {
-        // Альтернативное поле translations
-        translationText = wordData.translations.slice(0, 1).join(', ');
-    }
+    // Получаем первый перевод из translationsArray
+    const translations = wordData.translationsArray || [];
+    const translationText = translations.length > 0 ? translations[0] : '';
 
     // Получаем nickname или используем значение по умолчанию
-    const nickname = wordData.nickname || 'anonimous';
+    const nickname = wordData.nickname || 'anonymous';
 
     wordElement.innerHTML = `
         <div class="other-word-first-line">
@@ -1479,18 +1502,6 @@ function createOtherUserWord(wordData) {
 
 // --- Delete word ---
 async function deleteWord(wordId) {
-    // Если это тестовое слово, просто удаляем его из массива
-    if (wordId.startsWith('test-')) {
-        currentWords = currentWords.filter(w => w.id !== wordId);
-        if (currentWords.length === 0) {
-            currentCardIndex = 0;
-        } else if (currentCardIndex >= currentWords.length) {
-            currentCardIndex = Math.max(0, currentWords.length - 1);
-        }
-        displayCurrentCard();
-        showNotification('Тестовое слово удалено', 'success');
-        return;
-    }
 
     if (!wordId) { showNotification('Ошибка: не указан ID слова', 'error'); return; }
     if (!confirm('Вы уверены, что хотите удалить это слово?')) return;
@@ -1502,12 +1513,18 @@ async function deleteWord(wordId) {
 
     try {
         if (loadingOverlay) loadingOverlay.style.display = 'flex';
-        const response = await fetch(url, { method: 'DELETE', headers: { 'Accept': 'application/json' }, credentials: isSameOrigin(API_BASE_URL) ? 'include' : 'omit' });
-        const text = await response.text().catch(()=>null);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: { 'Accept': 'application/json' },
+            credentials: isSameOrigin(API_BASE_URL) ? 'include' : 'omit'
+        });
+
+        const text = await response.text().catch(() => null);
         if (!response.ok) {
             console.error('deleteWord bad response', response.status, text);
             throw new Error(`Ошибка удаления (${response.status})`);
         }
+
         showNotification('Слово успешно удалено', 'success');
 
         // Перезагружаем слова и обновляем интерфейс
@@ -1521,7 +1538,10 @@ async function deleteWord(wordId) {
                 displayCurrentCard();
             }
         }
-        if (document.getElementById('statistics')?.classList.contains('active')) await loadStatistics();
+
+        if (document.getElementById('statistics')?.classList.contains('active')) {
+            await loadStatistics();
+        }
     } catch (err) {
         console.error('deleteWord error:', err);
         showNotification('Ошибка при удалении слова', 'error');
