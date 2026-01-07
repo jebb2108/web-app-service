@@ -29,7 +29,7 @@ async def api_words_handler(
 
 @router.post("/words")
 async def api_add_word_handler(request: Word,):
-
+    """ Добавить новое слово в словарь """
     async with httpx.AsyncClient() as client:
         url = config.gateway.url + f'/api/words?user_id={request.user_id}'
         resp = await client.post(url=url, content=request.model_dump_json())
@@ -39,6 +39,18 @@ async def api_add_word_handler(request: Word,):
         logger.warning('Malfunction occured in api_add_word_handler')
         raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
+
+@router.put('/words')
+async def api_edit_word_handler(request: Word,):
+    """ Изменить уже существующее слово в словаре """
+    async with httpx.AsyncClient() as client:
+        url = config.gateway.url + f'/api/words?user_id={request.user_id}'
+        resp = await client.put(url=url, content=request.model_dump_json())
+        if resp.status_code == 200:
+            return Response(status_code=200)
+
+        logger.warning('Malfunction occured in api_add_word_handler')
+        raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
 @router.delete("/words")
 async def api_delete_word_handler(
