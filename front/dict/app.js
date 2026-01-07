@@ -526,6 +526,7 @@ function populateTranslationFields(translations, partOfSpeech) {
 }
 
 // --- Load words ---
+// --- Load words ---
 async function loadWords() {
     if (!currentUserId) {
         showNotification('user_id не определен', 'error');
@@ -553,34 +554,53 @@ async function loadWords() {
         try {
             data = JSON.parse(text);
             console.debug('loadWords: raw data', data);
+            console.debug('Тип данных:', typeof data, 'Является ли массивом?', Array.isArray(data));
 
-            // НОВЫЙ ФОРМАТ: данные приходят как объект с ключом user_id (строка)
-            if (data && typeof data === 'object') {
-                // Ищем ключ, соответствующий user_id (может быть строкой или числом)
-                const userIdKey = String(currentUserId);
-                console.debug('Looking for key:', userIdKey, 'in data keys:', Object.keys(data));
-
-                // Пробуем найти данные по ключу-строке (новый формат)
-                currentWords = data[userIdKey] || [];
-
-                // Если не нашли, пробуем найти по ключу-числу (старый формат)
-                if (currentWords.length === 0 && data[currentUserId]) {
-                    currentWords = data[currentUserId] || [];
-                }
-
-                console.debug('loadWords: extracted words', currentWords);
-            } else {
-                // Старый формат (массив) для обратной совместимости
-                currentWords = Array.isArray(data) ? data : [];
+            // Данные приходят как массив
+            if (Array.isArray(data)) {
+                // Данные пришли в виде массива слов
+                console.log('Получен массив слов, длина:', data.length);
+                currentWords = data;
             }
+            else if (data && typeof data === 'object') {
+                // Данные пришли в виде объекта с ключом user_id (старый формат)
+                console.log('Получен объект, ключи:', Object.keys(data));
+                const userIdKey = String(currentUserId);
+
+                // Пробуем найти данные по ключу
+                if (data[userIdKey]) {
+                    currentWords = data[userIdKey];
+                }
+                // Если не нашли, пробуем перебрать все ключи
+                else {
+                    // Ищем любой ключ, который может быть user_id
+                    for (const key in data) {
+                        if (Array.isArray(data[key])) {
+                            currentWords = data[key];
+                            console.log('Нашли слова по ключу:', key);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                currentWords = [];
+            }
+
+            console.debug('loadWords: extracted words', currentWords);
         } catch (e) {
+            console.error('Ошибка парсинга JSON:', e);
             throw new Error('Неверный формат JSON от сервера');
         }
 
         // Преобразуем структуру переводов для удобства использования
-        currentWords = currentWords.map(word => {
-            return transformWordStructure(word);
-        });
+        if (currentWords && currentWords.length > 0) {
+            currentWords = currentWords.map(word => {
+                if (!word) return null;
+                return transformWordStructure(word);
+            }).filter(word => word !== null); // Удаляем null значения
+        } else {
+            currentWords = [];
+        }
 
         console.debug('loadWords: transformed words', currentWords);
 
@@ -876,12 +896,7 @@ function displayCurrentCard() {
     const deleteBookmark = wordCard.querySelector('.delete-bookmark');
     const aiBookmark = wordCard.querySelector('.ai-bookmark');
 
-    if (editBookmark) {
-        const wordId = currentWord.id || currentWord.word_id;
-        editBookmark.setAttribute('data-word-id', wordId);
-        console.log('Setting edit button with word id:', wordId, 'type:', typeof wordId, 'word:', currentWord);
-    }
-
+    if (editBookmark) editBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
     if (deleteBookmark) deleteBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
     if (aiBookmark) aiBookmark.setAttribute('data-word-id', currentWord.id || currentWord.word_id);
 
@@ -901,8 +916,8 @@ function displayCurrentCard() {
     // Аудио
     const audioContainer = document.getElementById('cardAudioContainer');
     const audioBtn = document.getElementById('playAudioBtn');
-    if (currentWord.audio_url && audioContainer && audioBtn) {
-        audioBtn.onclick = () => playAudio(currentWord.audio_url);
+    if (currentWord.audio && audioContainer && audioBtn) {
+        audioBtn.onclick = () => playAudio(currentWord.audio);
         audioBtn.disabled = false;
         audioContainer.style.display = 'block';
     } else if (audioContainer) {
