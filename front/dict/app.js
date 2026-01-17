@@ -544,7 +544,7 @@ async function loadWords() {
 
         console.info('loadWords: status', response.status);
         const text = await response.text();
-        if (!response.ok) {
+        if (!response.ok && response.status !== 204) {
             console.error('loadWords: server responded with error', response.status, text);
             throw new Error(`Ошибка сервера (${response.status})`);
         }
