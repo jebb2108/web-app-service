@@ -543,8 +543,16 @@ async function loadWords() {
         });
 
         console.info('loadWords: status', response.status);
+
+        if (response.status === 204) {
+            console.info('loadWords: no content (204), words list is empty');
+            currentWords = [];
+            displayCurrentCard();
+            return;
+}
         const text = await response.text();
-        if (!response.ok && response.status !== 204) {
+
+        if (!response.ok) {
             console.error('loadWords: server responded with error', response.status, text);
             throw new Error(`Ошибка сервера (${response.status})`);
         }
