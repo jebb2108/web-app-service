@@ -1045,40 +1045,69 @@ async function loadStatistics() {
 
     const url = `${API_BASE_URL}/api/stats?user_id=${encodeURIComponent(currentUserId)}&_=${Date.now()}`;
     try {
-        const response = await fetch(url, { headers: { 'Accept': 'application/json' }, credentials: isSameOrigin(API_BASE_URL) ? 'include' : 'omit' });
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            credentials: isSameOrigin(API_BASE_URL) ? 'include' : 'omit'
+        });
+
         if (!response.ok) {
             const txt = await response.text().catch(()=>'');
             throw new Error(`Ошибка HTTP: ${response.status} ${txt}`);
         }
+
         const stats = await response.json();
-        statsContent.innerHTML = `
-            <div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:20px;">
+
+        // Массив частей речи с их ключами и метками
+        const partsOfSpeech = [
+            { label: 'Существительных', key: 'nouns', color: '#2e7d32' },
+            { label: 'Глаголов', key: 'verbs', color: '#2e7d32' },
+            { label: 'Прилагательных', key: 'adjectives', color: '#2e7d32' },
+            { label: 'Наречий', key: 'adverbs', color: '#2e7d32' },
+            { label: 'Другое', key: 'others', color: '#2e7d32' }
+        ];
+
+        // Фильтруем только те части речи, что больше 0
+        const nonZeroParts = partsOfSpeech.filter(p => stats[p.key] && stats[p.key] > 0);
+
+        let html = '';
+
+        if ((stats.total ?? 0) === 0 || nonZeroParts.length === 0) {
+            // Если всего слов нет или нет частей речи > 0
+            html = `<div style="text-align:center; font-size:1.2rem; color:#555; margin-top:20px;">
+                        Нет добавленных слов для отображения статистики
+                    </div>`;
+        } else {
+            // Генерируем карточки частей речи > 0
+            const partsHtml = nonZeroParts.map(p => `
                 <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.total ?? 0))}</div>
+                    <div style="font-size:2rem; color:${p.color}; font-weight:bold;">
+                        ${escapeHTML(String(stats[p.key]))}
+                    </div>
+                    <div>${p.label}</div>
+                </div>
+            `).join('');
+
+            // Всего слов всегда показываем, если > 0
+            const totalHtml = `
+                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
+                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">
+                        ${escapeHTML(String(stats.total ?? 0))}
+                    </div>
                     <div>Всего слов</div>
                 </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.nouns ?? 0))}</div>
-                    <div>Существительных</div>
-                </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.verbs ?? 0))}</div>
-                    <div>Глаголов</div>
-                </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.adjectives ?? 0))}</div>
-                    <div>Прилагательных</div>
-                </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.adverbs ?? 0))}</div>
-                    <div>Наречий</div>
-                </div>
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">${escapeHTML(String(stats.others ?? 0))}</div>
-                    <div>Другое</div>
-                </div>
-            </div>
-        `;
+            `;
+
+            html = `
+                    <div class="no-stats">
+                        <div class="icon">📊</div>
+                        <div class="message">Нет добавленных слов для отображения статистики</div>
+                    </div>
+                `;
+
+        }
+
+        statsContent.innerHTML = html;
+
     } catch (err) {
         console.error('loadStatistics error:', err);
         statsContent.innerHTML = '<div style="color:red;">Ошибка загрузки статистики</div>';
