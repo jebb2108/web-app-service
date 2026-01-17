@@ -411,17 +411,21 @@ async function updateQueueData() {
 
 // Функция для автоматической расстановки дефисов в дате рождения
 function formatBirthDateInput(input) {
-    let value = input.value.replace(/\D/g, '');
+    let value = input.value.replace(/\D/g, ''); // оставляем только цифры
 
-    // Добавляем дефисы после 2 и 4 символов
-    if (value.length > 4) {
-        value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
-    } else if (value.length > 2) {
-        value = value.substring(0, 2) + '-' + value.substring(2, 4);
-    }
+    if (value.length > 8) value = value.substring(0, 8);
 
-    input.value = value;
+    const day = value.substring(0, 2);
+    const month = value.substring(2, 4);
+    const year = value.substring(4, 8);
+
+    let formatted = day;
+    if (month) formatted += '-' + month;
+    if (year) formatted += '-' + year;
+
+    input.value = formatted;
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Элементы страниц
@@ -531,27 +535,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Автоматическая форматирование даты рождения с дефисами
     birthDateInput.addEventListener('input', function(e) {
-        // Сохраняем позицию курсора
         const cursorPosition = this.selectionStart;
         const originalValue = this.value;
 
-        // Форматируем значение
         formatBirthDateInput(this);
 
-        // Восстанавливаем позицию курсора с учетом добавленных дефисов
+        // Корректная позиция курсора
         let newCursorPosition = cursorPosition;
+        if (this.value.length > originalValue.length) newCursorPosition = cursorPosition + 1;
 
-        // Если мы добавили дефис, сдвигаем курсор
-        if (this.value.length > originalValue.length) {
-            newCursorPosition = this.value.length;
-        }
-
-        // Устанавливаем курсор
         this.setSelectionRange(newCursorPosition, newCursorPosition);
 
-        // Запускаем валидацию
         validateBirthDate();
     });
+
 
     // Также обрабатываем событие keydown для лучшего UX
     birthDateInput.addEventListener('keydown', function(e) {
@@ -564,8 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validateBirthDate() {
         const birthDateValue = birthDateInput.value.trim();
-
         const dateRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
+
         if (!dateRegex.test(birthDateValue)) {
             ageValidation.textContent = 'Формат даты: ДД-ММ-ГГГГ';
             ageValidation.className = 'field-validation error';
@@ -575,12 +572,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        const parts = birthDateValue.split('-');
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10);
-        const year = parseInt(parts[2], 10);
-
+        const [day, month, year] = birthDateValue.split('-').map(Number);
         const birthDate = new Date(year, month - 1, day);
+
         if (birthDate.getDate() !== day || birthDate.getMonth() !== month - 1 || birthDate.getFullYear() !== year) {
             ageValidation.textContent = 'Неверная дата';
             ageValidation.className = 'field-validation error';
@@ -590,11 +584,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
+        // Проверка возраста
         const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        let age = today.getFullYear() - year;
+        if (today.getMonth() < month - 1 || (today.getMonth() === month - 1 && today.getDate() < day)) {
             age--;
         }
 
@@ -613,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return true;
     }
+
 
     // Обработка галочки романтических отношений
     romanticInterest.addEventListener('change', function() {
@@ -720,11 +714,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const [day, month, year] = birthDateInput.value.split('-');
+
         const formData = {
             user_id: parseInt(userId),
             nickname: document.getElementById('nickname').value,
             email: document.getElementById('email').value,
-            birthday: document.getElementById('birth_date').value,
+            birthday: `${year}-${month}-${day}`,
             gender: genderInput.value,
             intro: document.getElementById('about').value,
             dating: romanticInterest.checked,
