@@ -115,7 +115,7 @@ async def api_search_word_handler(
             # Если два запроса прошли успешно,
             # то конвертируем resp объекты в словарики
 
-            user_word, all_user_words = {}, {}
+            user_word, all_user_words = None, None
 
             if user_word_resp.status_code == 200:
                 # Пытается преобразовать resp объект
