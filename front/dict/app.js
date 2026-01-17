@@ -618,6 +618,11 @@ async function loadWords() {
             return wordA.localeCompare(wordB);
         });
 
+        // После загрузки и сортировки
+        if (currentCardIndex >= currentWords.length) {
+            currentCardIndex = Math.max(0, currentWords.length - 1);
+        }
+
         displayCurrentCard();
 
     } catch (err) {
