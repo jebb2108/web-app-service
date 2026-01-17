@@ -1325,36 +1325,72 @@ textarea {
     transform: translateY(-50%) scale(1.1) !important;
 }
 
-/* Пустая статистика в стиле карточки */
-.empty-statistics-card {
-    background: #fffdf6; /* тот же фон, что и у карточек */
+/* Отображение статистики */
+.stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: #e8f5e9;
+    padding: 20px;
     border-radius: 12px;
-    border: 1px solid #f0e6d2;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    width: 100%;
-    max-width: 500px;
-    padding: 50px 30px;
+    min-width: 140px;
     text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.stat-count {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-weight: 500;
+    color: #2e7d32;
+}
+
+/* Пустая статистика в стиле карточек */
+.empty-statistics {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    background: #fffdf6; /* тот же фон, что у карточек */
+    border-radius: 12px;
+    border: 1px solid #f0e6d2;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    max-width: 500px;
+    padding: 50px 30px;
     margin: 20px auto;
+    text-align: center;
+    gap: 20px;
 }
 
-.empty-statistics-card .empty-icon {
-    font-size: 4rem;
-    color: #e0d9c0; /* мягкий цвет */
+.empty-statistics .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f3f3f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 20px;
 }
 
-.empty-statistics-card h3 {
+.empty-statistics h3 {
     font-size: 1.5rem;
-    color: #5a5a5a;
     font-weight: 600;
+    color: #5a5a5a;
 }
 
-.empty-statistics-card p {
+.empty-statistics p {
     color: #888;
     font-size: 1rem;
     line-height: 1.4;
@@ -1676,4 +1712,19 @@ textarea {
     .word-translation:not(.multiple) {
         font-size: 1.2rem;
     }
+
+    .empty-statistics {
+        padding: 40px 20px;
+    }
+
+    .empty-statistics .empty-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2.5rem;
+    }
+
+    .empty-statistics h3 {
+        font-size: 1.3rem;
+    }
+
 }

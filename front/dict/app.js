@@ -1037,13 +1037,14 @@ function prevWord() {
     }
 }
 
-// --- Load statistics ---
 async function loadStatistics() {
     if (!currentUserId) return;
+
     const statsContent = document.getElementById('statsContent');
     if (!statsContent) return;
 
     const url = `${API_BASE_URL}/api/stats?user_id=${encodeURIComponent(currentUserId)}&_=${Date.now()}`;
+
     try {
         const response = await fetch(url, {
             headers: { 'Accept': 'application/json' },
@@ -1051,13 +1052,12 @@ async function loadStatistics() {
         });
 
         if (!response.ok) {
-            const txt = await response.text().catch(()=>'');
+            const txt = await response.text().catch(() => '');
             throw new Error(`Ошибка HTTP: ${response.status} ${txt}`);
         }
 
         const stats = await response.json();
 
-        // Массив частей речи с их ключами и метками
         const partsOfSpeech = [
             { label: 'Существительных', key: 'nouns', color: '#2e7d32' },
             { label: 'Глаголов', key: 'verbs', color: '#2e7d32' },
@@ -1066,64 +1066,50 @@ async function loadStatistics() {
             { label: 'Другое', key: 'others', color: '#2e7d32' }
         ];
 
-        // Фильтруем только те части речи, что больше 0
         const nonZeroParts = partsOfSpeech.filter(p => stats[p.key] && stats[p.key] > 0);
 
-        let html = '';
-
-        if ((stats.total ?? 0) === 0 || nonZeroParts.length === 0) {
-            // Если всего слов нет или нет частей речи > 0
-            const statsContent = document.getElementById('statsContent');
-
-            statsContent.innerHTML = ''; // очищаем содержимое
-
-            const emptyMessage = document.createElement('div');
-            emptyMessage.className = 'empty-message';
-            emptyMessage.innerHTML = `
-                <div class="empty-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h3>Нет добавленных слов для отображения статистики</h3>
-                <p>Добавьте новые слова, чтобы начать видеть статистику по частям речи.</p>
-            `;
-
-    statsContent.appendChild(emptyMessage);
-    statsContent.style.display = 'block';
-        } else {
-            // Генерируем карточки частей речи > 0
-            const partsHtml = nonZeroParts.map(p => `
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:${p.color}; font-weight:bold;">
-                        ${escapeHTML(String(stats[p.key]))}
+        // --- Если статистики нет ---
+        if ((stats.total ?? 0) === 0) {
+            statsContent.innerHTML = `
+                <div class="empty-statistics">
+                    <div class="empty-icon">
+                        <i class="fas fa-chart-bar"></i>
                     </div>
-                    <div>${p.label}</div>
-                </div>
-            `).join('');
-
-            // Всего слов всегда показываем, если > 0
-            const totalHtml = `
-                <div style="background:#e8f5e9; padding:15px; border-radius:10px; min-width:120px;">
-                    <div style="font-size:2rem; color:#2e7d32; font-weight:bold;">
-                        ${escapeHTML(String(stats.total ?? 0))}
-                    </div>
-                    <div>Всего слов</div>
+                    <h3>Нет добавленных слов для отображения статистики</h3>
+                    <p>Добавьте новые слова, чтобы начать видеть статистику по частям речи.</p>
                 </div>
             `;
-
-            html = `
-                    <div class="no-stats">
-                        <div class="icon">📊</div>
-                        <div class="message">Нет добавленных слов для отображения статистики</div>
-                    </div>
-                `;
-
+            statsContent.style.display = 'block';
+            return;
         }
 
-        statsContent.innerHTML = html;
+        // --- Если есть слова, отображаем карточки ---
+        const partsHtml = nonZeroParts.map(p => `
+            <div class="stat-card">
+                <div class="stat-count" style="color:${p.color}">${escapeHTML(String(stats[p.key]))}</div>
+                <div class="stat-label">${p.label}</div>
+            </div>
+        `).join('');
+
+        const totalHtml = `
+            <div class="stat-card">
+                <div class="stat-count" style="color:#2e7d32">${escapeHTML(String(stats.total ?? 0))}</div>
+                <div class="stat-label">Всего слов</div>
+            </div>
+        `;
+
+        statsContent.innerHTML = `
+            <div class="stats-grid">
+                ${totalHtml}
+                ${partsHtml}
+            </div>
+        `;
+        statsContent.style.display = 'block';
 
     } catch (err) {
         console.error('loadStatistics error:', err);
         statsContent.innerHTML = '<div style="color:red;">Ошибка загрузки статистики</div>';
+        statsContent.style.display = 'block';
     }
 }
 
