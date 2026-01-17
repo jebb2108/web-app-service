@@ -1,6 +1,7 @@
+from typing import List
+
 import httpx
 from fastapi import APIRouter, HTTPException, Query, Response
-
 
 from src.config import config
 from src.logconf import opt_logger as log
@@ -13,14 +14,23 @@ logger = log.setup_logger('dictionary_endpoints')
 @router.get("/words")
 async def api_words_handler(
     user_id: int = Query(..., description="User ID"),
-):
+) -> List[dict]:
     async with httpx.AsyncClient() as client:
         url = config.gateway.url + f'/api/words?user_id={user_id}'
         resp = await client.get(url=url)
         if resp.status_code == 200:
-            data = resp.json()
-            user_words_ls = data.get(str(user_id), {})
-            return [ dict(item) for item in user_words_ls ]
+
+            # Пытается преобразовать из формата json
+            try:
+                data = resp.json()
+                user_words_ls = data.get(str(user_id), [])
+
+            except: # noqa
+                user_words_ls = []
+
+            return [dict(item) for item in user_words_ls]
+
+
         else:
             raise HTTPException(
                 status_code=resp.status_code, detail=resp.text
@@ -81,6 +91,8 @@ async def api_search_word_handler(
     try:
         # Ищем слово от других участников
         async with httpx.AsyncClient() as client:
+
+            # Отправляет два запроса на gateway сервер
             user_word_resp = await client.get(
                 url=config.gateway.url + f'/api/words/search?user_id={user_id}&word={word}'
             )
@@ -88,12 +100,13 @@ async def api_search_word_handler(
                 url=config.gateway.url + f'/api/words/search?word={word}'
             )
 
-            if not user_word_resp.status_code == 200:
+
+            if not user_word_resp.status_code == 200 and user_word_resp.status_code != 204:
                 logger.warning('Malfunction occured in api_search_word_handler')
                 raise HTTPException(
                     status_code=user_word_resp.status_code, detail=user_word_resp.text
                 )
-            if not all_words_resp.status_code == 200:
+            if not all_words_resp.status_code == 200 and all_words_resp.status_code != 204:
                 logger.warning('Malfunction occured in api_search_word_handler')
                 raise HTTPException(
                     status_code=all_words_resp.status_code, detail=all_words_resp.text
@@ -101,18 +114,29 @@ async def api_search_word_handler(
 
             # Если два запроса прошли успешно,
             # то конвертируем resp объекты в словарики
-            if user_word := (user_word_resp.json()).get(str(user_id)): user_word = user_word[0]
-            all_user_words = all_words_resp.json()
 
-            logger.debug(f'user word: {user_word}')
-            logger.debug(f'all words: {all_user_words}')
+            user_word, all_user_words = {}, {}
 
-            # От лица пользователя не должно быть слова от
-            # самого пользователя в словаре других пользователей, соответсвенно удаляем
-            if str(user_id) in all_user_words:
-                del all_user_words[str(user_id)]
+            if user_word_resp.status_code == 200:
+                # Пытается преобразовать resp объект
+                user_data = user_word_resp.json().get(str(user_id), [])
+                user_word = user_data.pop() if user_data else {}
 
+                logger.debug(f'user word: {user_word}')
+
+            if all_words_resp.status_code == 200:
+                # Пытается преобразовать resp объект
+                all_user_words = all_words_resp.json()
+                # у всех пользователей не должно быть собственного слова
+                if str(user_id) in all_user_words:
+                    del all_user_words[str(user_id)]
+
+                logger.debug(f'all words: {all_user_words}')
+
+
+            # возвращает полученные слова
             return {"user_word": user_word, "all_users_words": all_user_words}
+
 
 
     except Exception as e:
@@ -133,6 +157,8 @@ async def api_stats_handler(
                 data = resp.json()
                 logger.info(f'data: {data}')
                 return resp.json()
+            elif resp.status_code == 204:
+                return {}
             else:
                 raise HTTPException(
                     status_code=resp.status_code, detail=resp.text
