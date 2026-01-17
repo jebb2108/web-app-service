@@ -1073,9 +1073,22 @@ async function loadStatistics() {
 
         if ((stats.total ?? 0) === 0 || nonZeroParts.length === 0) {
             // Если всего слов нет или нет частей речи > 0
-            html = `<div style="text-align:center; font-size:1.2rem; color:#555; margin-top:20px;">
-                        Нет добавленных слов для отображения статистики
-                    </div>`;
+            const statsContent = document.getElementById('statsContent');
+
+            statsContent.innerHTML = ''; // очищаем содержимое
+
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-message';
+            emptyMessage.innerHTML = `
+                <div class="empty-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>Нет добавленных слов для отображения статистики</h3>
+                <p>Добавьте новые слова, чтобы начать видеть статистику по частям речи.</p>
+            `;
+
+    statsContent.appendChild(emptyMessage);
+    statsContent.style.display = 'block';
         } else {
             // Генерируем карточки частей речи > 0
             const partsHtml = nonZeroParts.map(p => `
